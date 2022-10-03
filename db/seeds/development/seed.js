@@ -74,17 +74,17 @@ exports.seed = async function (knex) {
   ]);
 
   await knex('users').insert([
-    { username: 'user1@test.com', password: 'user1', roles: [], active: true },
-    { username: 'user2@test.com', password: 'user2', roles: [], active: true },
-    { username: 'user3@test.com', password: 'user3', roles: [], active: false },
-    { username: 'manager1@test.com', password: 'manager1', roles: ['manager'], active: true },
-    { username: 'manager2@test.com', password: 'manager2', roles: ['manager'], active: true },
+    { username: 'user1@test.com', password: 'user1', roles: JSON.stringify([]), active: true },
+    { username: 'user2@test.com', password: 'user2', roles: JSON.stringify([]), active: true },
+    { username: 'user3@test.com', password: 'user3', roles: JSON.stringify([]), active: false },
+    { username: 'user4test.com', password: 'user4', roles: JSON.stringify(['manager']), active: true },
+    { username: 'user5@test.com', password: 'user5', roles: JSON.stringify(['manager']), active: true },
   ])
 
   const user1 = await knex('users').select('*').first();
   const bike1 = await knex('bikes').select('*').first();
 
   return await knex('reservations').insert([
-    { user_id: user1.id, bike_id: bike1.id, reserved_from: '2022-10-01 08:00:00+11', reserved_to: '2022-10-01 12:00:00+11' }
+    { user_id: user1.id, bike_id: bike1.id, reserved_from: '2022-10-01 08:00:00+11', reserved_to: '2022-10-01 12:00:00+11', active: true }
   ])
 };

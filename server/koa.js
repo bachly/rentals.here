@@ -10,7 +10,9 @@ const {
     response
 } = require('./middleware');
 const Logger = require("koa-logger");
+
 const bikeRoutes = require('./routes/bikes');
+const userRoutes = require('./routes/users');
 
 dotenv.config();
 
@@ -41,6 +43,7 @@ module.exports = function (nextJsRequestHandler) {
 
     /***** REST API *****/
     koa.use(bikeRoutes.routes());
+    koa.use(userRoutes.routes());
 
     /***** TEST JSON REST API *****/
     router.get(

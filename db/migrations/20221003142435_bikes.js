@@ -12,7 +12,7 @@ exports.up = async function (knex) {
         table.increments();
         table.string('username').notNullable();
         table.string('password').notNullable();
-        table.string('roles').notNullable();
+        table.json('roles').notNullable();
         table.boolean('active').notNullable();
         table.timestamps();
     });
@@ -23,6 +23,7 @@ exports.up = async function (knex) {
         table.integer('bike_id').references('id').inTable('bikes').onDelete('SET NULL');
         table.datetime('reserved_from').notNullable();
         table.datetime('reserved_to').notNullable();
+        table.boolean('active').notNullable();
         table.timestamps();
     });
 };
