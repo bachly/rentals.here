@@ -15,7 +15,7 @@ users:
 - password
 - roles
 
-reservations:
+user_bike_reservations:
 
 - reservationId
 - bikeId
@@ -23,7 +23,7 @@ reservations:
 - fromDate
 - toDate
 
-bike_ratings:
+user_bike_ratings:
 
 - ratingId
 - bikeId
