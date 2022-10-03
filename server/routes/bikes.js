@@ -36,6 +36,18 @@ router.get(`${BASE_URL}/:id`, async (context) => {
     }
 })
 
+router.get(`${BASE_URL}/onDate/:date`, async (context) => {
+    try {
+        const bikes = await queries.getAvailableBikesOnADate(context.params.date);
+        context.body = {
+            status: 'success',
+            data: bikes
+        };
+    } catch (err) {
+        console.log(err)
+    }
+})
+
 router.post(`${BASE_URL}`, async (context) => {
     try {
         const bike = await queries.addBike(context.request.body);
