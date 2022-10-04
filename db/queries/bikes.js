@@ -31,15 +31,26 @@ function deleteBike(id) {
         .returning('*');
 }
 
-function getAvailableBikesOnADate(date) {
-    return knex('bikes')
+/**
+ * 
+ *  Yes:     date  [reseved_from ... reserved_to]
+ *   No:           [reseved_from ... date ... reserved_to]
+ *  Yes:           [reseved_from ... reserved_to]            date
+ * @param {*} date 
+ * @returns 
+ */
+async function getAvailableBikesOnADate(date) {
+    const reservedBikesOnDate = await knex('bikes')
         .leftJoin('reservations', 'reservations.bike_id', '=', 'bikes.id')
-        .select('bikes.id', 'model', 'color', 'available', 'reserved_from', 'reserved_to')
-        .where('reserved_from', '>', date)
-        .orWhere('reserved_to', '<', date)
-        .orWhereNull('reserved_from')
-        .orWhereNull('reserved_to')
-        .orderBy('id', 'asc')
+        .pluck('bikes.id')
+        .where('reserved_from', '<=', date)
+        .andWhere('reserved_to', '>=', date)
+        .andWhere('reservations.active', '=', true);
+
+    return knex('bikes').select('*')
+        .where('active', '=', true)
+        .whereNotIn('id', reservedBikesOnDate)
+        .orderBy('bikes.id');
 }
 
 module.exports = {

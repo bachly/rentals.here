@@ -36,7 +36,7 @@ router.get(`${BASE_URL}/:id`, async (context) => {
     }
 })
 
-router.get(`${BASE_URL}/onDate/:date`, async (context) => {
+router.get(`${BASE_URL}/availableOnDate/:date`, async (context) => {
     try {
         const bikes = await queries.getAvailableBikesOnADate(context.params.date);
         context.body = {

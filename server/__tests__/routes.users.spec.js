@@ -16,8 +16,8 @@ describe('routes: /v1/users', () => {
         done();
     });
 
-    describe('GET /api/v1/users', () => {
-        test('should return all users', async (done) => {
+    describe('GET /v1/users', () => {
+        it('should return all users', async (done) => {
             const response = await request(koa.callback()).get("/v1/users");
             expect(response.status).toEqual(200);
             expect(response.type).toEqual("application/json");
@@ -27,7 +27,18 @@ describe('routes: /v1/users', () => {
         });
     });
 
-    describe('GET /api/v1/users/:id', () => {
+    describe('GET /v1/users-and-reservations', () => {
+        it('should return all users + those with reservations', async (done) => {
+            const response = await request(koa.callback()).get("/v1/users-and-reservations");
+            expect(response.status).toEqual(200);
+            expect(response.type).toEqual("application/json");
+            expect(response.body.status).toEqual('success');
+            expect(response.body.data.length).toEqual(12);
+            done();
+        });
+    })
+
+    describe('GET /v1/users/:id', () => {
         it('should respond with a single user', async (done) => {
             const response = await request(koa.callback()).get("/v1/users/1");
             expect(response.status).toEqual(200);
@@ -49,7 +60,7 @@ describe('routes: /v1/users', () => {
         });
     });
 
-    describe('POST /api/v1/users', () => {
+    describe('POST /v1/users', () => {
         it('should return the user that was added', async (done) => {
             const response = await request(koa.callback()).post("/v1/users").send({
                 username: 'user@test.com',
@@ -77,7 +88,7 @@ describe('routes: /v1/users', () => {
         });
     });
 
-    describe('PUT /api/v1/users', () => {
+    describe('PUT /v1/users', () => {
         it('should return the user that was updated', async (done) => {
             const allUsers = await knex('users').select('*');
             const firstUser = allUsers[0];
@@ -111,7 +122,7 @@ describe('routes: /v1/users', () => {
         });
     });
 
-    describe('DELETE /api/v1/users/:id', () => {
+    describe('DELETE /v1/users/:id', () => {
         it('should return the user that was deleted', async (done) => {
             const allUsersBeforeDelete = await knex('users').select('*');
             const firstUser = allUsersBeforeDelete[0];

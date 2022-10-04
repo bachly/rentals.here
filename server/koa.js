@@ -11,8 +11,10 @@ const {
 } = require('./middleware');
 const Logger = require("koa-logger");
 
+const defaultRoutes = require('./routes/default');
 const bikeRoutes = require('./routes/bikes');
 const userRoutes = require('./routes/users');
+const reservationRoutes = require('./routes/reservations');
 
 dotenv.config();
 
@@ -42,31 +44,10 @@ module.exports = function (nextJsRequestHandler) {
     router.get("/", errorHandling, loadContextState, handleRequest);
 
     /***** REST API *****/
+    koa.use(defaultRoutes.routes());
     koa.use(bikeRoutes.routes());
     koa.use(userRoutes.routes());
-
-    /***** TEST JSON REST API *****/
-    router.get(
-        `/v1/test`,
-        errorHandling,
-        loadContextState,
-        async (context, next) => {
-            context.body = {
-                status: 'success',
-                data: {
-                    sampleProducts: [
-                        { title: 'Product 1' },
-                        { title: 'Product 2' },
-                        { title: 'Product 3' },
-                        { title: 'Product 4' },
-                        { title: 'Product 5' }
-                    ],
-                }
-            };
-
-            await next();
-        }
-    );
+    koa.use(reservationRoutes.routes());
 
     /***** NEXT JS RESOURCES & ALL OTHER ROUTES *****/
     router.get("(/_next/static/.*)", handleRequest);

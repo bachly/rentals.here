@@ -1,94 +1,92 @@
 {
-    "name": "bikerentals",
-    "version": "1.0.0",
-    "description": "KoaJS NextJS stack for a Bike Rentals application",
-    "main": "server.js",
-    "author": "Bach Ly <bachchienly@gmail.com>",
-    "license": "MIT",
-    "private": true,
-    "scripts": {
-      "css": "postcss css/tailwind.css -o public/tailwind.css",
-      "test": "yarn jest",
-      "next": "next",
-      "dev": "nodemon server.js",
-      "build": "next build",
-      "start": "NODE_ENV=production yarn node server.js",
-      "migratenew": "knex migrate:make",
-      "migrate": "knex migrate:latest",
-      "seednewtest": "knex seed:make --env test",
-      "seednewdev": "knex seed:make --env development",
-      "seedruntest": "knex seed:run --env test",
-      "seedrundev": "knex seed:run --env development"
-    },
-    "cacheDirectories": [
-      ".next/cache"
+  "name": "bikerentals",
+  "version": "1.0.0",
+  "description": "KoaJS NextJS stack for a Bike Rentals application",
+  "main": "server.js",
+  "author": "Bach Ly <bachchienly@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "css": "postcss css/tailwind.css -o public/tailwind.css",
+    "test": "yarn jest --runInBand",
+    "next": "next",
+    "dev": "nodemon server.js",
+    "build": "next build",
+    "start": "NODE_ENV=production yarn node server.js",
+    "migrate": "knex migrate:latest",
+    "migrate-make": "knex migrate:make",
+    "seed": "knex seed:run",
+    "seed-make": "knex seed:make"
+  },
+  "cacheDirectories": [
+    ".next/cache"
+  ],
+  "engines": {
+    "node": "^14"
+  },
+  "dependencies": {
+    "@koa/router": "^9.3.1",
+    "@sendgrid/mail": "^7.4.5",
+    "axios": "^0.20.0",
+    "axios-hooks": "^2.1.0",
+    "babel-register": "^6.26.0",
+    "date-fns": "^2.16.1",
+    "dotenv": "^8.2.0",
+    "isomorphic-fetch": "^2.2.1",
+    "js-cookie": "^2.2.1",
+    "knex": "^0.21.5",
+    "koa": "^2.13.0",
+    "koa-bodyparser": "^4.3.0",
+    "koa-logger": "^3.2.1",
+    "koa-session": "^6.0.0",
+    "next": "11.0.1",
+    "nodemon": "^2.0.4",
+    "pg": "^8.3.0",
+    "postcss": "^8.2.2",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "underscore": "^1.13.1"
+  },
+  "devDependencies": {
+    "autoprefixer": "^9.6.1",
+    "babel-jest": "^26.3.0",
+    "faker": "^5.5.3",
+    "jest": "^26.4.2",
+    "postcss-cli": "^6.1.2",
+    "supertest": "^4.0.2",
+    "tailwindcss": "^2.0.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
     ],
-    "engines": {
-      "node": "^14"
+    "collectCoverage": false,
+    "collectCoverageFrom": [
+      "**/routes/**/*.{ts,js}",
+      "!**/node_modules/**",
+      "!**/build/**",
+      "!**/coverage/**"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 100,
+        "functions": 100,
+        "lines": 100,
+        "statements": 100
+      }
     },
-    "dependencies": {
-      "@koa/router": "^9.3.1",
-      "@sendgrid/mail": "^7.4.5",
-      "axios": "^0.20.0",
-      "axios-hooks": "^2.1.0",
-      "babel-register": "^6.26.0",
-      "date-fns": "^2.16.1",
-      "dotenv": "^8.2.0",
-      "isomorphic-fetch": "^2.2.1",
-      "js-cookie": "^2.2.1",
-      "knex": "^0.21.5",
-      "koa": "^2.13.0",
-      "koa-bodyparser": "^4.3.0",
-      "koa-logger": "^3.2.1",
-      "koa-session": "^6.0.0",
-      "next": "11.0.1",
-      "nodemon": "^2.0.4",
-      "pg": "^8.3.0",
-      "postcss": "^8.2.2",
-      "react": "^16.13.1",
-      "react-dom": "^16.13.1",
-      "underscore": "^1.13.1"
-    },
-    "devDependencies": {
-      "autoprefixer": "^9.6.1",
-      "babel-jest": "^26.3.0",
-      "faker": "^5.5.3",
-      "jest": "^26.4.2",
-      "postcss-cli": "^6.1.2",
-      "supertest": "^4.0.2",
-      "tailwindcss": "^2.0.2"
-    },
-    "jest": {
-      "testEnvironment": "node",
-      "moduleFileExtensions": [
-        "js",
-        "json",
-        "ts"
-      ],
-      "collectCoverage": false,
-      "collectCoverageFrom": [
-        "**/routes/**/*.{ts,js}",
-        "!**/node_modules/**",
-        "!**/build/**",
-        "!**/coverage/**"
-      ],
-      "coverageThreshold": {
-        "global": {
-          "branches": 100,
-          "functions": 100,
-          "lines": 100,
-          "statements": 100
-        }
-      },
-      "coverageReporters": [
-        "text",
-        "text-summary"
-      ],
-      "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)x?$",
-      "testPathIgnorePatterns": [
-        "/node_modules/",
-        "/build/",
-        "/coverage/"
-      ]
-    }
+    "coverageReporters": [
+      "text",
+      "text-summary"
+    ],
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)x?$",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/build/",
+      "/coverage/"
+    ]
   }
+}

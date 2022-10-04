@@ -32,9 +32,22 @@ function deleteUser(id) {
         .returning(['id', 'username', 'roles', 'active']);
 }
 
+function getUsersWithReservations() {
+    return knex('users')
+        .leftJoin('reservations', 'reservations.user_id', '=', 'users.id')
+        .leftJoin('bikes', 'reservations.bike_id', '=', 'bikes.id')
+        .select('users.id', 'username', 'bikes.id AS bike_id', 'model', 'color', 'location', 'reserved_from', 'reserved_to')
+        .orderBy('users.id')
+        .orderBy('reserved_from')
+        // .whereNotNull('reserved_from')
+        // .count('reserved_from AS num_reservations')
+        // .groupBy('users.id', 'username')
+}
+
 module.exports = {
     getAllUsers,
     getSingleUser,
+    getUsersWithReservations,
     addUser,
     updateUser,
     deleteUser

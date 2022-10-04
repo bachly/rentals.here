@@ -4,8 +4,7 @@ exports.up = async function (knex) {
         table.string('model').notNullable();
         table.string('color').notNullable();
         table.string('location').notNullable();
-        table.boolean('available').notNullable();
-        table.timestamps();
+        table.boolean('active').notNullable();
     });
 
     await knex.schema.createTable('users', (table) => {
@@ -14,7 +13,6 @@ exports.up = async function (knex) {
         table.string('password').notNullable();
         table.json('roles').notNullable();
         table.boolean('active').notNullable();
-        table.timestamps();
     });
 
     return await knex.schema.createTable('reservations', (table) => {
@@ -24,7 +22,6 @@ exports.up = async function (knex) {
         table.datetime('reserved_from').notNullable();
         table.datetime('reserved_to').notNullable();
         table.boolean('active').notNullable();
-        table.timestamps();
     });
 };
 

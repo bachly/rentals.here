@@ -16,16 +16,6 @@ router.get(BASE_URL, async (context) => {
     }
 })
 
-router.get(`${BASE_URL}/with-reservations`, async (context) => {
-    try {
-        context.body = {
-            
-        }
-    } catch (err) {
-        console.log(err)
-    }
-})
-
 router.get(`${BASE_URL}/:id`, async (context) => {
     try {
         const user = await queries.getSingleUser(context.params.id);
@@ -41,6 +31,18 @@ router.get(`${BASE_URL}/:id`, async (context) => {
                 message: 'That user does not exist.'
             };
         }
+    } catch (err) {
+        console.log(err)
+    }
+})
+
+router.get(`${BASE_URL}-and-reservations`, async (context) => {
+    try {
+        const users = await queries.getUsersWithReservations();
+        context.body = {
+            status: 'success',
+            data: users
+        };
     } catch (err) {
         console.log(err)
     }
