@@ -54,6 +54,10 @@ module.exports = function (nextJsRequestHandler) {
     router.get("/admin", errorHandling, loadContextState, handleRequest);
     router.get("/admin/(.*)", errorHandling, loadContextState, handleRequest);
 
+    /**** NextJS /api routes */
+    router.get("/api/(.*)", handleRequest);
+    router.post("/api/(.*)", handleRequest);
+
     /***** NEXT JS RESOURCES & ALL OTHER ROUTES *****/
     router.get("(/_next/static/.*)", handleRequest);
     router.get("/_next/webpack-hmr", handleRequest);

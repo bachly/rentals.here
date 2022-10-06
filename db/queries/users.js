@@ -12,6 +12,12 @@ function getSingleUser(id) {
         .where({ id: parseInt(id) });
 }
 
+function getSingleUserByUsername(username) {
+    return knex('users')
+        .select(...fields)
+        .where({ username });
+}
+
 function addUser(user) {
     return knex('users')
         .insert(user)
@@ -39,14 +45,15 @@ function getUsersWithReservations() {
         .select('users.id', 'username', 'bikes.id AS bike_id', 'model', 'color', 'location', 'reserved_from', 'reserved_to')
         .orderBy('users.id')
         .orderBy('reserved_from')
-        // .whereNotNull('reserved_from')
-        // .count('reserved_from AS num_reservations')
-        // .groupBy('users.id', 'username')
+    // .whereNotNull('reserved_from')
+    // .count('reserved_from AS num_reservations')
+    // .groupBy('users.id', 'username')
 }
 
 module.exports = {
     getAllUsers,
     getSingleUser,
+    getSingleUserByUsername,
     getUsersWithReservations,
     addUser,
     updateUser,
