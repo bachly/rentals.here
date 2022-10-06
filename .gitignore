@@ -3,3 +3,4 @@ node_modules
 *.log
 .next
 .tmp
+.DS_Store
