@@ -15,7 +15,7 @@ users:
 - password
 - roles
 
-user_bike_reservations:
+reservations:
 
 - reservationId
 - bikeId
