@@ -12,7 +12,7 @@ router.get(BASE_URL, async (context) => {
             data: bikes
         };
     } catch (err) {
-        console.log(err)
+        console.error(err)
     }
 })
 
@@ -32,7 +32,7 @@ router.get(`${BASE_URL}/:id`, async (context) => {
             };
         }
     } catch (err) {
-        console.log(err)
+        console.error(err)
     }
 })
 
@@ -44,7 +44,7 @@ router.get(`${BASE_URL}/availableOnDate/:date`, async (context) => {
             data: bikes
         };
     } catch (err) {
-        console.log(err)
+        console.error(err)
     }
 })
 

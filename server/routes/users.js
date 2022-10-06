@@ -12,7 +12,7 @@ router.get(BASE_URL, async (context) => {
             data: users
         };
     } catch (err) {
-        console.log(err)
+        console.error(err)
     }
 })
 
@@ -32,7 +32,7 @@ router.get(`${BASE_URL}/:id`, async (context) => {
             };
         }
     } catch (err) {
-        console.log(err)
+        console.error(err)
     }
 })
 
@@ -44,7 +44,7 @@ router.get(`${BASE_URL}-and-reservations`, async (context) => {
             data: users
         };
     } catch (err) {
-        console.log(err)
+        console.error(err)
     }
 })
 

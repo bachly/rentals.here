@@ -9,7 +9,7 @@ router.get(BASE_URL, async (context) => {
             data: [1, 2, 3, 4]
         };
     } catch (err) {
-        console.log(err)
+        console.error(err)
     }
 })
 

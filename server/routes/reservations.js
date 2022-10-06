@@ -12,7 +12,7 @@ router.get(`${BASE_URL}`, async (context) => {
             data: reservations
         };
     } catch (err) {
-        console.log(err)
+        console.error(err)
     }
 })
 
@@ -24,7 +24,7 @@ router.get(`${BASE_URL}/byUser/:userId`, async (context) => {
             data: bikes
         };
     } catch (err) {
-        console.log(err)
+        console.error(err)
     }
 })
 
