@@ -8,7 +8,7 @@ export default function AdminUsersPage() {
         error: errorGettingResult }
     ] = useAxios(
         {
-            url: '/v1/users',
+            url: '/api/users',
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

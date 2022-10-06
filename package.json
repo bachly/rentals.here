@@ -31,6 +31,7 @@
     "axios": "^0.20.0",
     "axios-hooks": "^4.0.0",
     "babel-register": "^6.26.0",
+    "clsx": "^1.2.1",
     "cookie": "0.4.1",
     "crypto": "^1.0.1",
     "date-fns": "^2.16.1",
