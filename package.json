@@ -28,7 +28,7 @@
     "@koa/router": "^9.3.1",
     "@sendgrid/mail": "^7.4.5",
     "axios": "^0.20.0",
-    "axios-hooks": "^2.1.0",
+    "axios-hooks": "^4.0.0",
     "babel-register": "^6.26.0",
     "date-fns": "^2.16.1",
     "dotenv": "^8.2.0",
@@ -39,7 +39,7 @@
     "koa-bodyparser": "^4.3.0",
     "koa-logger": "^3.2.1",
     "koa-session": "^6.0.0",
-    "next": "11.0.1",
+    "next": "latest",
     "nodemon": "^2.0.4",
     "pg": "^8.3.0",
     "postcss": "^8.2.2",
@@ -54,7 +54,8 @@
     "jest": "^26.4.2",
     "postcss-cli": "^6.1.2",
     "supertest": "^4.0.2",
-    "tailwindcss": "^2.0.2"
+    "sass": "^1.50.0",
+    "tailwindcss": "^3.0.24"
   },
   "jest": {
     "testEnvironment": "node",

@@ -41,13 +41,18 @@ module.exports = function (nextJsRequestHandler) {
         context.res.statusCode = 200;
     };
 
-    router.get("/", errorHandling, loadContextState, handleRequest);
-
     /***** REST API *****/
     koa.use(defaultRoutes.routes());
     koa.use(bikeRoutes.routes());
     koa.use(userRoutes.routes());
     koa.use(reservationRoutes.routes());
+
+    /***** Frontend Pages *****/
+    router.get("/", errorHandling, loadContextState, handleRequest);
+
+    /***** Admin Pages *****/
+    router.get("/admin", errorHandling, loadContextState, handleRequest);
+    router.get("/admin/(.*)", errorHandling, loadContextState, handleRequest);
 
     /***** NEXT JS RESOURCES & ALL OTHER ROUTES *****/
     router.get("(/_next/static/.*)", handleRequest);
