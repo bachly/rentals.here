@@ -26,7 +26,12 @@ const Login = () => {
         body: JSON.stringify(body),
       })
       if (res.status === 200) {
-        Router.push('/')
+        const result = await res.json();
+        if (result.user && result.user.roles.indexOf('manager') >= 0) {
+          Router.push('/admin')
+        } else {
+          Router.push('/')
+        }
       } else {
         throw new Error(await res.text())
       }

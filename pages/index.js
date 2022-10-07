@@ -1,43 +1,119 @@
 import { useUser } from '../lib/hooks'
 import Layout from '../components/Layout'
+import React from 'react';
+import useAxios from 'axios-hooks';
+
+function today() {
+  return new Date().toISOString().substring(0, 10);
+}
 
 const Home = () => {
   const user = useUser()
 
+  const [state, setState] = React.useState({
+    bikes: {},
+    selectedDate: today(),
+    bikesAvailableOnSelectedDate: {},
+    filters: {
+      model: null,
+      color: null,
+      location: null,
+      rateAvergae: null
+    }
+  })
+
+  const [{
+    data: result,
+    loading: isGettingResult,
+    error: errorGettingResult }
+  ] = useAxios(
+    {
+      url: `/api/availableBikes/${state.selectedDate}`,
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        accept: 'application/json',
+      },
+      data: JSON.stringify({})
+    },
+    { manual: false }
+  )
+
+  React.useEffect(() => {
+    const bikes = {};
+
+    if (result && result.data) {
+      result.data.forEach(result => {
+        bikes[result.id] = result;
+      })
+
+      setState({
+        ...state,
+        bikes
+      })
+    }
+  }, [result])
+
+  function handleSelectDate() {
+    return event => {
+      event && event.preventDefault();
+      console.log('Selected date:', event.target.value);
+      setState({
+        ...state,
+        selectedDate: event.target.value
+      })
+    }
+  }
+
+  function handleReserve(bikeId) {
+    return event => {
+      event && event.preventDefault();
+
+    }
+  }
+
   return (
-    <Layout>
-      <h1>Passport.js Example</h1>
-
-      <p>Steps to test the example:</p>
-
-      <ol>
-        <li>Click Login and enter a username and password.</li>
-        <li>
-          You'll be redirected to Home. Click on Profile, notice how your
-          session is being used through a token stored in a cookie.
-        </li>
-        <li>
-          Click Logout and try to go to Profile again. You'll get redirected to
-          Login.
-        </li>
-      </ol>
-
-      {user && (
+    <Layout active="index">
+      {user ?
         <>
-          <p>Currently logged in as:</p>
-          <pre>{JSON.stringify(user, null, 2)}</pre>
-        </>
-      )}
+          <div className="pb-2 border-b border-gray-500 flex items-center">
+            <span className="flex items-center">
+              <label className="mr-2">Available on</label>
+              <input type="date" className="bg-gray-200 py-1 px-2" defaultValue={today()} onChange={handleSelectDate()} />
+            </span>
+          </div>
 
-      <style jsx>{`
-        li {
-          margin-bottom: 0.5rem;
-        }
-        pre {
-          white-space: pre-wrap;
-          word-wrap: break-word;
-        }
-      `}</style>
+          {isGettingResult ? <>Loading...</> :
+            <ul>
+              <li className="w-full flex items-center py-2 font-bold bg-gray-100">
+                <div className="h-8 w-10 px-1 py-1">
+                  Id
+                </div>
+                <div className="h-8 w-48 px-1 py-1">Model</div>
+                <div className="h-8 w-20 px-1 py-1">Color</div>
+                <div className="h-8 flex-1 px-1 py-1">Location</div>
+                <div className="w-32 px-4 py-1"></div>
+              </li>
+              {state.bikes && Object.keys(state.bikes).map(id => {
+                const bike = state.bikes[id];
+
+                return <li key={`bike-${id}`} className="w-full flex items-center py-2">
+                  <div className="h-8 w-10 px-1 py-1">
+                    {bike.id}
+                  </div>
+                  <div className="h-8 w-48 px-1 py-1">{bike.model}</div>
+                  <div className="h-8 w-20 px-1 py-1">{bike.color}</div>
+                  <div className="h-8 flex-1 px-1 py-1">{bike.location}</div>
+                  <div className="w-40 px-4 py-1">
+                    <button onClick={handleReserve(bike.id)} className="text-blue-500 hover:underline">
+                      Reserve
+                    </button>
+                  </div>
+                </li>
+              })}
+            </ul>}
+        </> :
+        <>Please log in</>}
     </Layout>
   )
 }

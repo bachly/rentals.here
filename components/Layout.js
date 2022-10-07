@@ -7,7 +7,7 @@ const Layout = (props) => (
       <title>Bike Rentals</title>
     </Head>
 
-    <Header />
+    <Header active={props.active} />
 
     <main>
       <div className="max-w-3xl mx-auto">{props.children}</div>

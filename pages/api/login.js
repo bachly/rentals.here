@@ -2,6 +2,7 @@ import passport from 'passport'
 import nextConnect from 'next-connect'
 import { localStrategy } from '../../lib/password-local'
 import { setLoginSession } from '../../lib/auth'
+import useSWR from 'swr'
 
 const authenticate = (method, req, res) =>
   new Promise((resolve, reject) => {
@@ -26,7 +27,7 @@ export default nextConnect()
 
       await setLoginSession(res, session)
 
-      res.status(200).send({ done: true })
+      res.status(200).send({ done: true, user: { roles: user.roles } })
     } catch (error) {
       console.error(error)
       res.status(401).send(error.message)

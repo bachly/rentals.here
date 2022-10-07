@@ -1,65 +1,48 @@
+import clsx from 'clsx'
 import Link from 'next/link'
 import { useUser } from '../lib/hooks'
 
-const Header = () => {
+const Header = ({ active }) => {
   const user = useUser()
 
   return (
-    <header>
-      <nav>
-        <ul>
-          <li>
+    <header className="bg-black mb-4">
+      <div className="max-w-3xl mx-auto">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
             <Link href="/">
-              <a>Home</a>
+              <a className={clsx(active === 'index' && 'bg-blue-500', 'block py-2 px-4 text-white border-l border-r border-gray-800')}>Bikes</a>
             </Link>
-          </li>
-          {user ? (
-            <>
-              <li>
+            {user &&
+              <Link href="/reservations">
+                <a className={clsx(active === 'reservations' && 'bg-blue-500', 'block py-2 px-4 text-white border-r border-gray-800')}>My reservations</a>
+              </Link>}
+          </div>
+          <div className="flex items-center">
+            {user &&
+              <>
                 <Link href="/profile">
-                  <a>Profile</a>
+                  <a className={clsx(active === 'profile' && 'bg-blue-500', 'block py-2 px-4 border-r border-l border-gray-800 text-white')}>My account</a>
                 </Link>
-              </li>
-              <li>
-                <a href="/api/logout">Logout</a>
-              </li>
-            </>
-          ) : (
-            <li>
+
+                {user.roles.indexOf('manager') >= 0 &&
+                  <Link href="/admin">
+                    <a className="block py-2 px-2 text-white">Admin</a>
+                  </Link>}
+
+                <Link href="/api/logout">
+                  <a className="block py-2 px-4 text-white border-r border-gray-800">Logout</a>
+                </Link>
+              </>
+            }
+            {!user && <>
               <Link href="/login">
-                <a>Login</a>
+                <a className="block py-2 px-4 text-white">Login</a>
               </Link>
-            </li>
-          )}
-        </ul>
-      </nav>
-      <style jsx>{`
-        nav {
-          max-width: 42rem;
-          margin: 0 auto;
-          padding: 0.2rem 1.25rem;
-        }
-        ul {
-          display: flex;
-          list-style: none;
-          margin-left: 0;
-          padding-left: 0;
-        }
-        li {
-          margin-right: 1rem;
-        }
-        li:first-child {
-          margin-left: auto;
-        }
-        a {
-          color: #fff;
-          text-decoration: none;
-        }
-        header {
-          color: #fff;
-          background-color: #333;
-        }
-      `}</style>
+            </>}
+          </div>
+        </div>
+      </div>
     </header>
   )
 }

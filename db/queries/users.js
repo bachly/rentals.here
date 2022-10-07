@@ -14,8 +14,9 @@ function getSingleUser(id) {
 
 function getSingleUserByUsername(username) {
     return knex('users')
-        .select(...fields)
-        .where({ username });
+        .select('*')
+        .where({ username })
+        .first();
 }
 
 function addUser(user) {
