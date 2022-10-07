@@ -11,7 +11,7 @@ exports.up = async function (knex) {
         table.increments();
         table.string('username').unique().notNullable();
         table.string('password').notNullable();
-        table.json('roles').notNullable();
+        table.string('roles').notNullable();
         table.boolean('active').notNullable();
     });
 

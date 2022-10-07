@@ -22,13 +22,10 @@ const Header = ({ active }) => {
             {user &&
               <>
                 <Link href="/profile">
-                  <a className={clsx(active === 'profile' && 'bg-blue-500', 'block py-2 px-4 border-r border-l border-gray-800 text-white')}>My account</a>
+                  <a className={clsx(active === 'profile' && 'bg-blue-500', 'block py-2 px-4 border-r border-l border-gray-800 text-white')}>
+                    Hi {user.username}
+                  </a>
                 </Link>
-
-                {user.roles.indexOf('manager') >= 0 &&
-                  <Link href="/admin">
-                    <a className="block py-2 px-2 text-white">Admin</a>
-                  </Link>}
 
                 <Link href="/api/logout">
                   <a className="block py-2 px-4 text-white border-r border-gray-800">Logout</a>

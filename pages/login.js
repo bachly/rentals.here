@@ -27,7 +27,7 @@ const Login = () => {
       })
       if (res.status === 200) {
         const result = await res.json();
-        if (result.user && result.user.roles.indexOf('manager') >= 0) {
+        if (result.user && result.user.roles === 'manager') {
           Router.push('/admin')
         } else {
           Router.push('/')

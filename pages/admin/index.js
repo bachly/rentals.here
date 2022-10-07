@@ -306,9 +306,9 @@ export default function AdminHomePage() {
                 {isGettingResult ? <>Loading...</> :
                     <>
                         {state.items && Object.keys(state.items).length > 0 &&
-                            <ul className="">
+                            <ul className="mt-8">
 
-                                <li className="my-4 bg-blue-50 w-full py-2">
+                                <li className="bg-blue-50 w-full py-2">
                                     <form onSubmit={handleSave(0)} className="flex items-center">
                                         <div className="w-10 px-1">
 
@@ -338,23 +338,23 @@ export default function AdminHomePage() {
                                     if (state.currentEditItems && state.currentEditItems[id]) {
                                         const currentEditItem = state.currentEditItems[id];
 
-                                        return <li key={`item-${currentEditItem.id}`} className="w-full py-2 bg-yellow-50">
+                                        return <li key={`item-${currentEditItem.id}`} className="w-full py-2 bg-yellow-200">
                                             <form onSubmit={handleSave(currentEditItem.id)} className="flex items-center">
                                                 <div className="w-10 px-1">
                                                     {currentEditItem.id}
                                                 </div>
 
                                                 <div className="w-48 px-1">
-                                                    <input onChange={handleChange(currentEditItem.id, 'model')} className="w-full h-8 px-2 bg-gray-200 inner-shadow" defaultValue={currentEditItem.model} />
+                                                    <input onChange={handleChange(currentEditItem.id, 'model')} className="w-full h-8 px-2 bg-white inner-shadow" defaultValue={currentEditItem.model} />
                                                 </div>
                                                 <div className="w-20 px-1">
-                                                    <input onChange={handleChange(currentEditItem.id, 'color')} className="w-full h-8 px-2 bg-gray-200 inner-shadow" defaultValue={currentEditItem.color} />
+                                                    <input onChange={handleChange(currentEditItem.id, 'color')} className="w-full h-8 px-2 bg-white inner-shadow" defaultValue={currentEditItem.color} />
                                                 </div>
                                                 <div className="flex-1 px-1">
-                                                    <input onChange={handleChange(currentEditItem.id, 'location')} className="w-full h-8 px-2 bg-gray-200 inner-shadow" defaultValue={currentEditItem.location} />
+                                                    <input onChange={handleChange(currentEditItem.id, 'location')} className="w-full h-8 px-2 bg-white inner-shadow" defaultValue={currentEditItem.location} />
                                                 </div>
                                                 <div className="flex-1 px-1">
-                                                    <select onChange={handleChange(currentEditItem.id, 'active')} defaultValue={currentEditItem.active} className="w-full h-8 bg-gray-200 inner-shadow">
+                                                    <select onChange={handleChange(currentEditItem.id, 'active')} defaultValue={currentEditItem.active} className="w-full h-8 bg-white inner-shadow">
                                                         <option value={true}>Available</option>
                                                         <option value={false}>Not available</option>
                                                     </select>

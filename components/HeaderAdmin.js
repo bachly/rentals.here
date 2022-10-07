@@ -19,8 +19,10 @@ export default function AdminHeader({ active }) {
                 </div>
                 {user &&
                     <div className="flex items-center">
-                        <Link href="/profile">
-                            <a className={clsx(active === 'profile' && 'bg-blue-500 px-4 mr-2', 'block py-2 px-2 text-white')}>My account</a>
+                        <Link href="/admin/profile">
+                            <a className={clsx(active === 'profile' && 'bg-blue-500 px-4 mr-2', 'block py-2 px-2 text-white')}>
+                                Hi {user.username}
+                            </a>
                         </Link>
                         <Link href="/api/logout">
                             <a className="block py-2 px-2 text-white">Logout</a>

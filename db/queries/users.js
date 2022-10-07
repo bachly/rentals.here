@@ -43,7 +43,7 @@ function getUsersWithReservations() {
     return knex('users')
         .leftJoin('reservations', 'reservations.user_id', '=', 'users.id')
         .leftJoin('bikes', 'reservations.bike_id', '=', 'bikes.id')
-        .select('users.id', 'username', 'bikes.id AS bike_id', 'model', 'color', 'location', 'reserved_from', 'reserved_to')
+        .select('users.id', 'username', 'roles', 'reservations.id AS reservation_id', 'bikes.id AS bike_id', 'model', 'color', 'location', 'reserved_from', 'reserved_to')
         .orderBy('users.id')
         .orderBy('reserved_from')
     // .whereNotNull('reserved_from')

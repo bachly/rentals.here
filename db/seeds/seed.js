@@ -29,11 +29,11 @@ exports.seed = async function (knex) {
   ]);
 
   await knex('users').insert([
-    { username: 'user1', password: '1234', roles: JSON.stringify(['hirer']), active: true },
-    { username: 'user2', password: '1234', roles: JSON.stringify(['hirer']), active: true },
-    { username: 'user3', password: '1234', roles: JSON.stringify(['hirer']), active: true },
-    { username: 'user4', password: '1234', roles: JSON.stringify(['hirer']), active: false },
-    { username: 'admin', password: '1234', roles: JSON.stringify(['manager']), active: true },
+    { username: 'user1', password: '1234', roles: '', active: true },
+    { username: 'user2', password: '1234', roles: '', active: true },
+    { username: 'user3', password: '1234', roles: '', active: true },
+    { username: 'user4', password: '1234', roles: '', active: false },
+    { username: 'admin', password: '1234', roles: 'manager', active: true },
   ])
 
   const allUsers = await knex('users').select('*').where('active', '=', true).orderBy('id', 'asc');

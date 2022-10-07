@@ -65,7 +65,7 @@ describe('routes: /v1/users', () => {
             const response = await request(koa.callback()).post("/v1/users").send({
                 username: 'user@test.com',
                 password: '123',
-                roles: [],
+                roles: '',
                 active: true
             });
             expect(response.status).toEqual(201);
@@ -93,7 +93,7 @@ describe('routes: /v1/users', () => {
             const allUsers = await knex('users').select('*');
             const firstUser = allUsers[0];
             const response = await request(koa.callback()).put(`/v1/users/${firstUser.id}`).send({
-                roles: JSON.stringify(["manager"])
+                roles: "manager"
             });
             expect(response.status).toEqual(200);
             expect(response.type).toEqual("application/json");
@@ -104,7 +104,7 @@ describe('routes: /v1/users', () => {
             // ensure the user was in fact updated
             const theUpdatedUser = response.body.data[0];
             expect(theUpdatedUser.roles).not.toEqual(firstUser.roles);
-            expect(theUpdatedUser.roles).toEqual(["manager"]);
+            expect(theUpdatedUser.roles).toEqual("manager");
 
             done();
         });
