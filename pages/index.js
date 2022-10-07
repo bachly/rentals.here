@@ -25,13 +25,15 @@ const Home = () => {
       color: null,
       location: null,
       rateAvergae: null
-    }
+    },
+    bikeIdToReserve: null
   })
 
   const [{
     data: result,
     loading: isGettingResult,
-    error: errorGettingResult }
+    error: errorGettingResult },
+    getAvailableBikes
   ] = useAxios(
     {
       url: `/api/availableBikes/${state.selectedFromDate}_${state.selectedToDate}`,
@@ -40,9 +42,34 @@ const Home = () => {
         'Content-Type': 'application/json',
         accept: 'application/json',
       },
+      useCache: false,
       data: JSON.stringify({})
     },
     { manual: false }
+  )
+
+  const [{
+    data: resultCreatingReservation,
+    loading: isCreatingReservation,
+    error: errorCreatingReservation },
+    createReservation
+  ] = useAxios(
+    {
+      url: `/api/reservations`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        accept: 'application/json',
+      },
+      data: JSON.stringify({
+        user_id: user && user.id,
+        bike_id: state.bikeIdToReserve,
+        reserved_from: state.selectedFromDate,
+        reserved_to: state.selectedToDate,
+        active: true
+      })
+    },
+    { manual: true }
   )
 
   React.useEffect(() => {
@@ -91,7 +118,10 @@ const Home = () => {
   function handleReserve(bikeId) {
     return event => {
       event && event.preventDefault();
-
+      setState({
+        ...state,
+        bikeIdToReserve: bikeId
+      })
     }
   }
 
@@ -103,10 +133,22 @@ const Home = () => {
     if (toDateInputRef && toDateInputRef.current) {
       toDateInputRef.current.value = state.selectedToDate;
     }
+
+    getAvailableBikes();
   }, [
     state.selectedFromDate,
     state.selectedToDate
   ])
+
+  React.useEffect(() => {
+    if (state.bikeIdToReserve && user.id && state.selectedFromDate && state.selectedToDate) {
+      createReservation();
+    }
+  }, [state.bikeIdToReserve, user])
+
+  React.useEffect(() => {
+    getAvailableBikes();
+  }, [resultCreatingReservation])
 
   return (
     <Layout active="index">
@@ -134,6 +176,21 @@ const Home = () => {
                 <div className="h-8 flex-1 px-1 py-1">Location</div>
                 <div className="flex-1 px-4 py-1"></div>
               </li>
+              {/* <li className="w-full flex items-center py-1">
+                <div className="h-8 w-16 px-1 py-1 text-sm flex items-center">
+                  Filter by:
+                </div>
+                <div className="h-8 w-48 px-1 py-1">
+                  <input type="text" className="border border-gray-300 px-2 w-full" placeholder="Model" />
+                </div>
+                <div className="h-8 w-20 px-1 py-1">
+                  <input type="text" className="border border-gray-300 px-2 w-full" placeholder="Color" />
+                </div>
+                <div className="h-8 flex-1 px-1 py-1">
+                  <input type="text" className="border border-gray-300 px-2 w-full" placeholder="Location" />
+                </div>
+                <div className="flex-1 px-4 py-1"></div>
+              </li> */}
               {state.bikes && Object.keys(state.bikes).length > 0 ?
                 <>
                   {Object.keys(state.bikes).map(id => {

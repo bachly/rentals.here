@@ -14,7 +14,7 @@ const ReservationsPage = () => {
     const [state, setState] = React.useState({
         items: {},
         userIdToFetch: null,
-        idToUpdate: null
+        idToDelete: null
     })
 
     const [{
@@ -36,21 +36,19 @@ const ReservationsPage = () => {
     )
 
     const [{
-        data: resultUpdating,
-        loading: isCancelling,
-        error: errorCancelling },
+        data: resultDeleting,
+        loading: isDeleting,
+        error: errorDeleting },
         updateReservation
     ] = useAxios(
         {
-            url: `/api/reservations/${state.idToUpdate}`,
-            method: 'POST',
+            url: `/api/reservations/${state.idToDelete}`,
+            method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
                 accept: 'application/json',
             },
-            data: JSON.stringify({
-                active: state.items && state.idToUpdate &&  !state.items[state.idToUpdate].active
-            })
+            data: JSON.stringify({})
         },
         { manual: true }
     )
@@ -85,40 +83,39 @@ const ReservationsPage = () => {
         }
     }, [result])
 
-    function togleActive(reservationId) {
+    function handleDelete(reservationId) {
         return event => {
             event && event.preventDefault();
             setState({
                 ...state,
-                idToUpdate: reservationId
+                idToDelete: reservationId
             })
         }
     }
 
     React.useEffect(() => {
-        if (state.idToUpdate) {
+        if (state.idToDelete) {
             updateReservation();
         }
-    }, [state.idToUpdate])
+    }, [state.idToDelete])
 
     React.useEffect(() => {
-        if (resultUpdating && resultUpdating.status === 'success') {
-            const returnedUpdatedItem = resultUpdating.data[0];
-            console.log("Returned updated item:", returnedUpdatedItem);
+        if (resultDeleting && resultDeleting.status === 'success') {
+            const returnedDeletedItem = resultDeleting.data[0];
+            console.log("Returned deleted item:", returnedDeletedItem);
+
+            const items = Object.assign({}, state.items);
+            delete items[returnedDeletedItem.id];
 
             setState({
                 ...state,
                 items: {
-                    ...state.items,
-                    [returnedUpdatedItem.id]: {
-                        ...state.items[returnedUpdatedItem.id],
-                        ...returnedUpdatedItem
-                    }
+                    ...items
                 },
-                idToUpdate: null
+                idToDelete: null
             })
         }
-    }, [resultUpdating])
+    }, [resultDeleting])
 
     return (
         <Layout active="reservations">
@@ -142,7 +139,6 @@ const ReservationsPage = () => {
                                 <div className="h-8 flex-1 px-1 py-1">Location</div>
                                 <div className="h-8 w-28 px-1 py-1">From</div>
                                 <div className="h-8 w-28 px-1 py-1">To</div>
-                                <div className="h-8 w-20 px-1 py-1">Status</div>
                                 <div className="w-16 px-4 py-1"></div>
                             </li>
                             {state.items && Object.keys(state.items).length > 0 ?
@@ -160,18 +156,10 @@ const ReservationsPage = () => {
                                             <div className="h-8 flex-1 px-1 py-1">{reservation.location}</div>
                                             <div className="h-8 w-28 px-1 py-1">{formatISODate(reservation.reserved_from)}</div>
                                             <div className="h-8 w-28 px-1 py-1">{formatISODate(reservation.reserved_to)}</div>
-                                            <div className="h-8 w-20 px-1 py-1">{reservation.active ?
-                                                <span className="text-green-500">Active</span> :
-                                                <span className="text-red-500">Cancelled</span>
-                                            }</div>
                                             <div className="w-16 px-4 py-1">
-                                                {reservation.active ?
-                                                    <button onClick={togleActive(reservation.id)} className="text-blue-500 hover:underline">
-                                                        Deactivate
-                                                    </button> :
-                                                    <button onClick={togleActive(reservation.id)} className="text-blue-500 hover:underline">
-                                                        Reactivate
-                                                    </button>}
+                                                <button onClick={handleDelete(reservation.id)} className="text-blue-500 hover:underline">
+                                                    Cancel
+                                                </button>
                                             </div>
                                         </li>
                                     })}

@@ -29,9 +29,17 @@ function updateReservation(id, reservation) {
         .returning('*');
 }
 
+function deleteReservation(id) {
+    return knex('reservations')
+        .del()
+        .where({ id: parseInt(id) })
+        .returning('*');
+}
+
 module.exports = {
     getAllReservations,
     getBikesReservedByUser,
     addReservation,
-    updateReservation
+    updateReservation,
+    deleteReservation
 };
