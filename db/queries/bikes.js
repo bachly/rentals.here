@@ -1,3 +1,4 @@
+const { endOfDay, startOfDay } = require('date-fns');
 const knex = require('../connection');
 
 function getAllBikes() {
@@ -33,20 +34,26 @@ function deleteBike(id) {
 
 /**
  * 
- *  Yes:     date  [reseved_from ... reserved_to]
- *   No:           [reseved_from ... date ... reserved_to]
- *  Yes:           [reseved_from ... reserved_to]            date
+ *  fromDate-toDate  [reseved_from ...                 ... reserved_to]                   => Available
+ *  fromDate         [reseved_from ... toDate          ... reserved_to]                   => Reserved
+ *  fromDate         [reseved_from ...                 ... reserved_to] toDate            => Reserved
+ *                   [reseved_from ... fromDate-toDate ... reserved_to]                   => Reserved
+ *                   [reseved_from ...        fromDate ... reserved_to] toDate            => Reserved
+ *                   [reseved_from ...                 ... reserved_to] fromDate-toDate   => Available
+ * 
  * @param {*} date 
  * @returns 
  */
-async function getAvailableBikesOnADate(date) {
-    // console.log("date", date);
+async function getAvailableBikesOnADate(fromDate, toDate) {
+    // console.log("date range", fromDate, toDate);
 
     const reservedBikesOnDate = await knex('bikes')
         .leftJoin('reservations', 'reservations.bike_id', '=', 'bikes.id')
         .pluck('bikes.id')
-        .where('reserved_from', '<=', date)
-        .andWhere('reserved_to', '>=', date)
+        .where(function () {
+            this.where('reserved_from', '<=', toDate)  
+                .andWhere('reserved_to', '>=', fromDate)
+        })
         .andWhere('reservations.active', '=', true);
 
     // console.log("reservedBikesOnDate", reservedBikesOnDate);

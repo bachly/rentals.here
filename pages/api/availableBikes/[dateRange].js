@@ -2,11 +2,13 @@ const queries = require('../../../db/queries/bikes');
 
 export default async function availableBikesOnDate(req, res) {
     try {
-        const date = req.query.date;
+        const dateRange = req.query.dateRange;
+        const fromDate = dateRange.split('_')[0];
+        const toDate = dateRange.split('_')[1];
 
         switch (req.method) {
             case "GET":
-                const bikes = await queries.getAvailableBikesOnADate(date);
+                const bikes = await queries.getAvailableBikesOnADate(fromDate, toDate);
                 res.status(200).json({ status: 'success', data: bikes })
                 break;
             default:

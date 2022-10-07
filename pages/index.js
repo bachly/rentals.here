@@ -2,6 +2,7 @@ import { useUser } from '../lib/hooks'
 import Layout from '../components/Layout'
 import React from 'react';
 import useAxios from 'axios-hooks';
+import { differenceInDays } from 'date-fns';
 
 function today() {
   return new Date().toISOString().substring(0, 10);
@@ -10,9 +11,14 @@ function today() {
 const Home = () => {
   const user = useUser()
 
+  const fromDateInputRef = React.createRef();
+  const toDateInputRef = React.createRef();
+
   const [state, setState] = React.useState({
     bikes: {},
-    selectedDate: today(),
+    selectedFromDate: today(),
+    selectedToDate: today(),
+    reservationDuration: 1,
     bikesAvailableOnSelectedDate: {},
     filters: {
       model: null,
@@ -28,7 +34,7 @@ const Home = () => {
     error: errorGettingResult }
   ] = useAxios(
     {
-      url: `/api/availableBikes/${state.selectedDate}`,
+      url: `/api/availableBikes/${state.selectedFromDate}_${state.selectedToDate}`,
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -54,13 +60,30 @@ const Home = () => {
     }
   }, [result])
 
-  function handleSelectDate() {
+  function handleSelectFromDate() {
     return event => {
       event && event.preventDefault();
-      console.log('Selected date:', event.target.value);
+      const fromDate = event.target.value;
+      const toDate = new Date(state.selectedToDate) < new Date(fromDate) ? fromDate : state.selectedToDate;
       setState({
         ...state,
-        selectedDate: event.target.value
+        selectedFromDate: fromDate,
+        selectedToDate: toDate,
+        reservationDuration: differenceInDays(new Date(toDate), new Date(fromDate)) + 1
+      })
+    }
+  }
+
+  function handleSelectToDate() {
+    return event => {
+      event && event.preventDefault();
+      const toDate = event.target.value;
+      const fromDate = new Date(state.selectedFromDate) > new Date(toDate) ? toDate : state.selectedFromDate;
+      setState({
+        ...state,
+        selectedToDate: toDate,
+        selectedFromDate: fromDate,
+        reservationDuration: differenceInDays(new Date(toDate), new Date(fromDate)) + 1
       })
     }
   }
@@ -72,14 +95,31 @@ const Home = () => {
     }
   }
 
+  React.useEffect(() => {
+    if (fromDateInputRef && fromDateInputRef.current) {
+      fromDateInputRef.current.value = state.selectedFromDate;
+    }
+
+    if (toDateInputRef && toDateInputRef.current) {
+      toDateInputRef.current.value = state.selectedToDate;
+    }
+  }, [
+    state.selectedFromDate,
+    state.selectedToDate
+  ])
+
   return (
     <Layout active="index">
       {user ?
         <>
           <div className="pb-2 border-b border-gray-500 flex items-center">
             <span className="flex items-center">
-              <label className="mr-2">Available on</label>
-              <input type="date" className="bg-gray-200 py-1 px-2" defaultValue={today()} onChange={handleSelectDate()} />
+              <label className="mr-2">Available from</label>
+              <input ref={fromDateInputRef} type="date" className="bg-gray-200 py-1 px-2" defaultValue={state.selectedFromDate} onChange={handleSelectFromDate()} />
+            </span>
+            <span className="flex items-center">
+              <label className="mx-2">to</label>
+              <input ref={toDateInputRef} type="date" className="bg-gray-200 py-1 px-2" defaultValue={state.selectedToDate} onChange={handleSelectToDate()} />
             </span>
           </div>
 
@@ -92,7 +132,7 @@ const Home = () => {
                 <div className="h-8 w-48 px-1 py-1">Model</div>
                 <div className="h-8 w-20 px-1 py-1">Color</div>
                 <div className="h-8 flex-1 px-1 py-1">Location</div>
-                <div className="w-32 px-4 py-1"></div>
+                <div className="flex-1 px-4 py-1"></div>
               </li>
               {state.bikes && Object.keys(state.bikes).length > 0 ?
                 <>
@@ -106,16 +146,16 @@ const Home = () => {
                       <div className="h-8 w-48 px-1 py-1">{bike.model}</div>
                       <div className="h-8 w-20 px-1 py-1">{bike.color}</div>
                       <div className="h-8 flex-1 px-1 py-1">{bike.location}</div>
-                      <div className="w-40 px-4 py-1">
+                      <div className="flex-1 px-4 py-1">
                         <button onClick={handleReserve(bike.id)} className="text-blue-500 hover:underline">
-                          Reserve
+                          Reserve for {state.reservationDuration} day(s)
                         </button>
                       </div>
                     </li>
                   })}
                 </> : <>
                   <li className="py-2">
-                    No bikes available on this date.
+                    No bikes available in this period.
                   </li>
                 </>}
             </ul>}
