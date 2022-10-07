@@ -4,16 +4,17 @@ import React from 'react';
 import useAxios from 'axios-hooks';
 
 function formatISODate(dateString) {
-    const date = new Date(dateString).toISOString();
-    return date.substring(0, 10);
+    const date = new Date(dateString).toLocaleDateString();
+    return date;
 }
 
 const ReservationsPage = () => {
     const user = useUser()
 
     const [state, setState] = React.useState({
-        reservations: {},
-        userIdToFetch: null
+        items: {},
+        userIdToFetch: null,
+        idToUpdate: null
     })
 
     const [{
@@ -34,6 +35,26 @@ const ReservationsPage = () => {
         { manual: true }
     )
 
+    const [{
+        data: resultUpdating,
+        loading: isCancelling,
+        error: errorCancelling },
+        updateReservation
+    ] = useAxios(
+        {
+            url: `/api/reservations/${state.idToUpdate}`,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                accept: 'application/json',
+            },
+            data: JSON.stringify({
+                active: state.items && state.idToUpdate &&  !state.items[state.idToUpdate].active
+            })
+        },
+        { manual: true }
+    )
+
     React.useEffect(() => {
         if (user && user.id) {
             setState({
@@ -50,26 +71,54 @@ const ReservationsPage = () => {
     }, [state.userIdToFetch])
 
     React.useEffect(() => {
-        const reservations = {};
+        const items = {};
 
         if (result && result.data) {
             result.data.forEach(result => {
-                reservations[result.id] = result;
+                items[result.id] = result;
             })
 
             setState({
                 ...state,
-                reservations
+                items
             })
         }
     }, [result])
 
-    function handleCancel(reservationId) {
+    function togleActive(reservationId) {
         return event => {
             event && event.preventDefault();
-
+            setState({
+                ...state,
+                idToUpdate: reservationId
+            })
         }
     }
+
+    React.useEffect(() => {
+        if (state.idToUpdate) {
+            updateReservation();
+        }
+    }, [state.idToUpdate])
+
+    React.useEffect(() => {
+        if (resultUpdating && resultUpdating.status === 'success') {
+            const returnedUpdatedItem = resultUpdating.data[0];
+            console.log("Returned updated item:", returnedUpdatedItem);
+
+            setState({
+                ...state,
+                items: {
+                    ...state.items,
+                    [returnedUpdatedItem.id]: {
+                        ...state.items[returnedUpdatedItem.id],
+                        ...returnedUpdatedItem
+                    }
+                },
+                idToUpdate: null
+            })
+        }
+    }, [resultUpdating])
 
     return (
         <Layout active="reservations">
@@ -77,7 +126,7 @@ const ReservationsPage = () => {
                 <>
                     <div className="pb-2 border-b border-gray-500 flex items-center">
                         <span className="flex items-center">
-                            <label className="mr-2">You have {Object.keys(state.reservations).length} reservations</label>
+                            <label className="mr-2">You have {Object.keys(state.items).length} reservations</label>
                         </span>
                     </div>
 
@@ -93,28 +142,42 @@ const ReservationsPage = () => {
                                 <div className="h-8 flex-1 px-1 py-1">Location</div>
                                 <div className="h-8 w-28 px-1 py-1">From</div>
                                 <div className="h-8 w-28 px-1 py-1">To</div>
-                                <div className="w-32 px-4 py-1"></div>
+                                <div className="h-8 w-20 px-1 py-1">Status</div>
+                                <div className="w-16 px-4 py-1"></div>
                             </li>
-                            {state.reservations && Object.keys(state.reservations).map(id => {
-                                const reservation = state.reservations[id];
+                            {state.items && Object.keys(state.items).length > 0 ?
+                                <>
+                                    {Object.keys(state.items).map(id => {
+                                        const reservation = state.items[id];
 
-                                return <li key={`reservation-${id}`} className="w-full flex items-center py-2">
-                                    <div className="h-8 w-10 px-1 py-1">
-                                        {reservation.id}
-                                    </div>
-                                    <div className="h-8 w-16 px-1 py-1">{reservation.bike_id}</div>
-                                    <div className="h-8 w-20 px-1 py-1">{reservation.model}</div>
-                                    <div className="h-8 w-16 px-1 py-1">{reservation.color}</div>
-                                    <div className="h-8 flex-1 px-1 py-1">{reservation.location}</div>
-                                    <div className="h-8 w-28 px-1 py-1">{formatISODate(reservation.reserved_from)}</div>
-                                    <div className="h-8 w-28 px-1 py-1">{formatISODate(reservation.reserved_to)}</div>
-                                    <div className="w-40 px-4 py-1">
-                                        <button onClick={handleCancel(reservation.id)} className="text-blue-500 hover:underline">
-                                            Cancel
-                                        </button>
-                                    </div>
-                                </li>
-                            })}
+                                        return <li key={`reservation-${id}`} className="w-full flex items-center py-2">
+                                            <div className="h-8 w-10 px-1 py-1">
+                                                {reservation.id}
+                                            </div>
+                                            <div className="h-8 w-16 px-1 py-1">{reservation.bike_id}</div>
+                                            <div className="h-8 w-20 px-1 py-1">{reservation.model}</div>
+                                            <div className="h-8 w-16 px-1 py-1">{reservation.color}</div>
+                                            <div className="h-8 flex-1 px-1 py-1">{reservation.location}</div>
+                                            <div className="h-8 w-28 px-1 py-1">{formatISODate(reservation.reserved_from)}</div>
+                                            <div className="h-8 w-28 px-1 py-1">{formatISODate(reservation.reserved_to)}</div>
+                                            <div className="h-8 w-20 px-1 py-1">{reservation.active ?
+                                                <span className="text-green-500">Active</span> :
+                                                <span className="text-red-500">Cancelled</span>
+                                            }</div>
+                                            <div className="w-16 px-4 py-1">
+                                                {reservation.active ?
+                                                    <button onClick={togleActive(reservation.id)} className="text-blue-500 hover:underline">
+                                                        Deactivate
+                                                    </button> :
+                                                    <button onClick={togleActive(reservation.id)} className="text-blue-500 hover:underline">
+                                                        Reactivate
+                                                    </button>}
+                                            </div>
+                                        </li>
+                                    })}
+                                </> : <>
+                                    No reservations.
+                                </>}
                         </ul>}
                 </> :
                 <>Please log in</>}

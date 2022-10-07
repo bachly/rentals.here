@@ -86,31 +86,38 @@ const Home = () => {
           {isGettingResult ? <>Loading...</> :
             <ul>
               <li className="w-full flex items-center py-2 font-bold bg-gray-100">
-                <div className="h-8 w-10 px-1 py-1">
-                  Id
+                <div className="h-8 w-16 px-1 py-1">
+                  Bike Id
                 </div>
                 <div className="h-8 w-48 px-1 py-1">Model</div>
                 <div className="h-8 w-20 px-1 py-1">Color</div>
                 <div className="h-8 flex-1 px-1 py-1">Location</div>
                 <div className="w-32 px-4 py-1"></div>
               </li>
-              {state.bikes && Object.keys(state.bikes).map(id => {
-                const bike = state.bikes[id];
+              {state.bikes && Object.keys(state.bikes).length > 0 ?
+                <>
+                  {Object.keys(state.bikes).map(id => {
+                    const bike = state.bikes[id];
 
-                return <li key={`bike-${id}`} className="w-full flex items-center py-2">
-                  <div className="h-8 w-10 px-1 py-1">
-                    {bike.id}
-                  </div>
-                  <div className="h-8 w-48 px-1 py-1">{bike.model}</div>
-                  <div className="h-8 w-20 px-1 py-1">{bike.color}</div>
-                  <div className="h-8 flex-1 px-1 py-1">{bike.location}</div>
-                  <div className="w-40 px-4 py-1">
-                    <button onClick={handleReserve(bike.id)} className="text-blue-500 hover:underline">
-                      Reserve
-                    </button>
-                  </div>
-                </li>
-              })}
+                    return <li key={`bike-${id}`} className="w-full flex items-center py-2">
+                      <div className="h-8 w-16 px-1 py-1">
+                        {bike.id}
+                      </div>
+                      <div className="h-8 w-48 px-1 py-1">{bike.model}</div>
+                      <div className="h-8 w-20 px-1 py-1">{bike.color}</div>
+                      <div className="h-8 flex-1 px-1 py-1">{bike.location}</div>
+                      <div className="w-40 px-4 py-1">
+                        <button onClick={handleReserve(bike.id)} className="text-blue-500 hover:underline">
+                          Reserve
+                        </button>
+                      </div>
+                    </li>
+                  })}
+                </> : <>
+                  <li className="py-2">
+                    No bikes available on this date.
+                  </li>
+                </>}
             </ul>}
         </> :
         <>Please log in</>}
