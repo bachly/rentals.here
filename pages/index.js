@@ -3,6 +3,7 @@ import Layout from '../components/Layout'
 import React from 'react';
 import useAxios from 'axios-hooks';
 import { differenceInDays } from 'date-fns';
+import _ from 'underscore';
 
 function today() {
   return new Date().toISOString().substring(0, 10);
@@ -16,6 +17,7 @@ const Home = () => {
 
   const [state, setState] = React.useState({
     bikes: {},
+    filteredBikes: {},
     selectedFromDate: today(),
     selectedToDate: today(),
     reservationDuration: 1,
@@ -24,7 +26,6 @@ const Home = () => {
       model: null,
       color: null,
       location: null,
-      rateAvergae: null
     },
     bikeIdToReserve: null
   })
@@ -82,7 +83,8 @@ const Home = () => {
 
       setState({
         ...state,
-        bikes
+        bikes,
+        filteredBikes: bikes
       })
     }
   }, [result])
@@ -125,6 +127,19 @@ const Home = () => {
     }
   }
 
+  function handleChangeFilter(filter) {
+    return event => {
+      event && event.preventDefault();
+      setState({
+        ...state,
+        filters: {
+          ...state.filters,
+          [filter]: event.target.value.toLowerCase()
+        }
+      })
+    }
+  }
+
   React.useEffect(() => {
     if (fromDateInputRef && fromDateInputRef.current) {
       fromDateInputRef.current.value = state.selectedFromDate;
@@ -149,6 +164,38 @@ const Home = () => {
   React.useEffect(() => {
     getAvailableBikes();
   }, [resultCreatingReservation])
+
+  React.useEffect(() => {
+    const result = Object.keys(state.bikes).map(id => state.bikes[id]);
+    let filteredBikes = {};
+
+    result.map((bike, index) => {
+      const model = bike.model.toLowerCase();
+      const color = bike.color.toLowerCase();
+      const location = bike.location.toLowerCase();
+
+      if (state.filters.model && model.indexOf(state.filters.model) === -1) {
+        result[index] = null;
+      }
+
+      if (state.filters.color && color.indexOf(state.filters.color) === -1) {
+        result[index] = null;
+      }
+
+      if (state.filters.location && location.indexOf(state.filters.location) === -1) {
+        result[index] = null;
+      }
+    })
+
+    _.compact(result).forEach(r => {
+      filteredBikes[r.id] = r;
+    })
+
+    setState({
+      ...state,
+      filteredBikes
+    })
+  }, [state.filters])
 
   return (
     <Layout active="index">
@@ -176,24 +223,24 @@ const Home = () => {
                 <div className="h-8 flex-1 px-1 py-1">Location</div>
                 <div className="flex-1 px-4 py-1"></div>
               </li>
-              {/* <li className="w-full flex items-center py-1">
+              <li className="w-full flex items-center py-1 bg-gray-200 shadow-inner">
                 <div className="h-8 w-16 px-1 py-1 text-sm flex items-center">
-                  Filter by:
+                  Filter by
                 </div>
                 <div className="h-8 w-48 px-1 py-1">
-                  <input type="text" className="border border-gray-300 px-2 w-full" placeholder="Model" />
+                  <input type="text" onChange={handleChangeFilter('model')} className="border border-gray-300 px-2 w-full text-sm" placeholder="Model" />
                 </div>
                 <div className="h-8 w-20 px-1 py-1">
-                  <input type="text" className="border border-gray-300 px-2 w-full" placeholder="Color" />
+                  <input type="text" onChange={handleChangeFilter('color')} className="border border-gray-300 px-2 w-full text-sm" placeholder="Color" />
                 </div>
                 <div className="h-8 flex-1 px-1 py-1">
-                  <input type="text" className="border border-gray-300 px-2 w-full" placeholder="Location" />
+                  <input type="text" onChange={handleChangeFilter('location')} className="border border-gray-300 px-2 w-full text-sm" placeholder="Location" />
                 </div>
                 <div className="flex-1 px-4 py-1"></div>
-              </li> */}
-              {state.bikes && Object.keys(state.bikes).length > 0 ?
+              </li>
+              {state.filteredBikes && Object.keys(state.filteredBikes).length > 0 ?
                 <>
-                  {Object.keys(state.bikes).map(id => {
+                  {Object.keys(state.filteredBikes).map(id => {
                     const bike = state.bikes[id];
 
                     return <li key={`bike-${id}`} className="w-full flex items-center py-2">
