@@ -48,9 +48,26 @@ exports.seed = async function (knex) {
   const b5 = allBikes[4];
   const b6 = allBikes[5];
 
-  return await knex('reservations').insert([
+  await knex('reservations').insert([
+     /***
+     * Old Reservation tables
+     */
+    // user1 reservations
+    { user_id: user1.id, bike_id: b1.id, reserved_from: '2021-10-04T00:00:00+11', reserved_to: '2021-10-05T23:00:00+11', active: false },
+    { user_id: user1.id, bike_id: b1.id, reserved_from: '2021-10-07T00:00:00+11', reserved_to: '2021-10-08T23:00:00+11', active: false },
+    // user2 reservation
+    { user_id: user2.id, bike_id: b2.id, reserved_from: '2021-10-05T00:00:00+11', reserved_to: '2021-10-10T23:00:00+11', active: false },
+    // user3 reservations
+    { user_id: user3.id, bike_id: b3.id, reserved_from: '2021-10-06T00:00:00+11', reserved_to: '2021-10-09T23:00:00+11', active: false },
+    { user_id: user3.id, bike_id: b4.id, reserved_from: '2021-10-06T00:00:00+11', reserved_to: '2021-10-10T23:00:00+11', active: false },
+    { user_id: user3.id, bike_id: b5.id, reserved_from: '2021-10-06T00:00:00+11', reserved_to: '2021-10-08T23:00:00+11', active: false },
+    { user_id: user3.id, bike_id: b5.id, reserved_from: '2021-10-10T00:00:00+11', reserved_to: '2021-10-10T23:00:00+11', active: false },
+    { user_id: user3.id, bike_id: b6.id, reserved_from: '2021-10-06T00:00:00+11', reserved_to: '2021-10-07T23:00:00+11', active: false },
+    { user_id: user3.id, bike_id: b6.id, reserved_from: '2021-10-08T00:00:00+11', reserved_to: '2021-10-08T23:00:00+11', active: false },
+    { user_id: user3.id, bike_id: b6.id, reserved_from: '2021-10-10T00:00:00+11', reserved_to: '2021-10-10T23:00:00+11', active: false },
+
     /***
-     * Reservation tables
+     * Active Reservation tables
      * 
      *  Date     04 05 06 07 08 09 10 11  Reservations
      * User1     b1 b1    b1 b1           (2)
@@ -77,5 +94,43 @@ exports.seed = async function (knex) {
     { user_id: user3.id, bike_id: b6.id, reserved_from: '2022-10-06T00:00:00+11', reserved_to: '2022-10-07T23:00:00+11', active: true },
     { user_id: user3.id, bike_id: b6.id, reserved_from: '2022-10-08T00:00:00+11', reserved_to: '2022-10-08T23:00:00+11', active: false },
     { user_id: user3.id, bike_id: b6.id, reserved_from: '2022-10-10T00:00:00+11', reserved_to: '2022-10-10T23:00:00+11', active: true },
+
+   
+  ])
+
+  /***
+   *  
+   * Rating integer averages:
+   * 
+   * b1: no rating
+   * b2: 3
+   * b3: 4
+   * b4: no rating
+   * b5: 2
+   * b6: 5
+   * 
+   *  
+   */
+  await knex('ratings').insert([
+    // bike 1
+    // no rating
+
+    // bike 2
+    { reservation_id: 3, rating: 3, comment: 'Ok' },
+
+    // bike 3
+    { reservation_id: 4, rating: 4, comment: 'Good' },
+
+    // bike 4
+    // no rating provided
+
+    // bike 5
+    { reservation_id: 5, rating: 1, comment: 'Bad' },
+    { reservation_id: 5, rating: 2, comment: 'Bad' },
+
+    // bike 6
+    { reservation_id: 6, rating: 5, comment: 'Excellent' },
+    { reservation_id: 6, rating: 5, comment: 'Excellent' },
+    { reservation_id: 6, rating: 4, comment: 'Good' },
   ])
 };

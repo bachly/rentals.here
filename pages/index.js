@@ -27,13 +27,14 @@ const Home = () => {
       color: null,
       location: null,
     },
-    bikeIdToReserve: null
+    bikeIdToReserve: null,
+    ratings: {}
   })
 
   const [{
-    data: result,
-    loading: isGettingResult,
-    error: errorGettingResult },
+    data: resultGettingAvailableBikes,
+    loading: isGettingAvailableBikes,
+    error: errorGettingAvailableBikes },
     getAvailableBikes
   ] = useAxios(
     {
@@ -73,11 +74,29 @@ const Home = () => {
     { manual: true }
   )
 
+  const [{
+    data: resultGettingRatings,
+    loading: isGettingRatings,
+    error: errorGettingRatings },
+    getRatings
+  ] = useAxios(
+    {
+      url: `/api/ratings`,
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        accept: 'application/json',
+      },
+      data: JSON.stringify({})
+    },
+    { manual: false }
+  )
+
   React.useEffect(() => {
     const bikes = {};
 
-    if (result && result.data) {
-      result.data.forEach(result => {
+    if (resultGettingAvailableBikes && resultGettingAvailableBikes.data) {
+      resultGettingAvailableBikes.data.forEach(result => {
         bikes[result.id] = result;
       })
 
@@ -87,58 +106,7 @@ const Home = () => {
         filteredBikes: bikes
       })
     }
-  }, [result])
-
-  function handleSelectFromDate() {
-    return event => {
-      event && event.preventDefault();
-      const fromDate = event.target.value;
-      const toDate = new Date(state.selectedToDate) < new Date(fromDate) ? fromDate : state.selectedToDate;
-      setState({
-        ...state,
-        selectedFromDate: fromDate,
-        selectedToDate: toDate,
-        reservationDuration: differenceInDays(new Date(toDate), new Date(fromDate)) + 1
-      })
-    }
-  }
-
-  function handleSelectToDate() {
-    return event => {
-      event && event.preventDefault();
-      const toDate = event.target.value;
-      const fromDate = new Date(state.selectedFromDate) > new Date(toDate) ? toDate : state.selectedFromDate;
-      setState({
-        ...state,
-        selectedToDate: toDate,
-        selectedFromDate: fromDate,
-        reservationDuration: differenceInDays(new Date(toDate), new Date(fromDate)) + 1
-      })
-    }
-  }
-
-  function handleReserve(bikeId) {
-    return event => {
-      event && event.preventDefault();
-      setState({
-        ...state,
-        bikeIdToReserve: bikeId
-      })
-    }
-  }
-
-  function handleChangeFilter(filter) {
-    return event => {
-      event && event.preventDefault();
-      setState({
-        ...state,
-        filters: {
-          ...state.filters,
-          [filter]: event.target.value.toLowerCase()
-        }
-      })
-    }
-  }
+  }, [resultGettingAvailableBikes])
 
   React.useEffect(() => {
     if (fromDateInputRef && fromDateInputRef.current) {
@@ -197,13 +165,85 @@ const Home = () => {
     })
   }, [state.filters])
 
+  React.useEffect(() => {
+    if (resultGettingRatings) {
+      const ratings = {};
+
+      if (resultGettingRatings && resultGettingRatings.data) {
+        resultGettingRatings.data.forEach(r => {
+          ratings[r.bike_id] = {
+            ...r,
+            avg_rating: parseFloat(r.avg_rating)
+          };
+        })
+
+        setState({
+          ...state,
+          ratings
+        })
+      }
+    }
+  }, [resultGettingRatings])
+
+
+  function handleSelectFromDate() {
+    return event => {
+      event && event.preventDefault();
+      const fromDate = event.target.value;
+      const toDate = new Date(state.selectedToDate) < new Date(fromDate) ? fromDate : state.selectedToDate;
+      setState({
+        ...state,
+        selectedFromDate: fromDate,
+        selectedToDate: toDate,
+        reservationDuration: differenceInDays(new Date(toDate), new Date(fromDate)) + 1
+      })
+    }
+  }
+
+  function handleSelectToDate() {
+    return event => {
+      event && event.preventDefault();
+      const toDate = event.target.value;
+      const fromDate = new Date(state.selectedFromDate) > new Date(toDate) ? toDate : state.selectedFromDate;
+      setState({
+        ...state,
+        selectedToDate: toDate,
+        selectedFromDate: fromDate,
+        reservationDuration: differenceInDays(new Date(toDate), new Date(fromDate)) + 1
+      })
+    }
+  }
+
+  function handleReserve(bikeId) {
+    return event => {
+      event && event.preventDefault();
+      setState({
+        ...state,
+        bikeIdToReserve: bikeId
+      })
+    }
+  }
+
+  function handleChangeFilter(filter) {
+    return event => {
+      event && event.preventDefault();
+      setState({
+        ...state,
+        filters: {
+          ...state.filters,
+          [filter]: event.target.value.toLowerCase()
+        }
+      })
+    }
+  }
+
   return (
     <Layout active="index">
       {user ?
         <>
           <div className="pb-2 border-b border-gray-500 flex items-center">
             <span className="flex items-center">
-              <label className="mr-2">Available from</label>
+              <label className="mr-2">I want to reserve a bike from</label>
               <input ref={fromDateInputRef} type="date" className="bg-gray-200 py-1 px-2" defaultValue={state.selectedFromDate} onChange={handleSelectFromDate()} />
             </span>
             <span className="flex items-center">
@@ -212,7 +252,7 @@ const Home = () => {
             </span>
           </div>
 
-          {isGettingResult ? <>Loading...</> :
+          {isGettingAvailableBikes ? <>Loading...</> :
             <ul>
               <li className="w-full flex items-center py-2 font-bold bg-gray-100">
                 <div className="h-8 w-16 px-1 py-1">
@@ -221,10 +261,11 @@ const Home = () => {
                 <div className="h-8 w-48 px-1 py-1">Model</div>
                 <div className="h-8 w-20 px-1 py-1">Color</div>
                 <div className="h-8 flex-1 px-1 py-1">Location</div>
+                <div className="h-8 w-16 px-1 py-1">Rating</div>
                 <div className="flex-1 px-4 py-1"></div>
               </li>
               <li className="w-full flex items-center py-1 bg-gray-200 shadow-inner">
-                <div className="h-8 w-16 px-1 py-1 text-sm flex items-center">
+                <div className="h-8 w-16 px-1 py-1 text-xs italic flex items-center justify-end">
                   Filter by
                 </div>
                 <div className="h-8 w-48 px-1 py-1">
@@ -235,6 +276,16 @@ const Home = () => {
                 </div>
                 <div className="h-8 flex-1 px-1 py-1">
                   <input type="text" onChange={handleChangeFilter('location')} className="border border-gray-300 px-2 w-full text-sm" placeholder="Location" />
+                </div>
+                <div className="h-8 w-16 px-1 py-1">
+                  <select className="w-full">
+                    <option value={null}>-</option>
+                    <option value={1}>1</option>
+                    <option value={2}>2</option>
+                    <option value={3}>3</option>
+                    <option value={4}>4</option>
+                    <option value={5}>5</option>
+                  </select>
                 </div>
                 <div className="flex-1 px-4 py-1"></div>
               </li>
@@ -250,8 +301,11 @@ const Home = () => {
                       <div className="h-8 w-48 px-1 py-1">{bike.model}</div>
                       <div className="h-8 w-20 px-1 py-1">{bike.color}</div>
                       <div className="h-8 flex-1 px-1 py-1">{bike.location}</div>
+                      <div className="h-8 w-16 px-1 py-1">
+                        {state.ratings[bike.id] && state.ratings[bike.id].avg_rating}
+                      </div>
                       <div className="flex-1 px-4 py-1">
-                        <button onClick={handleReserve(bike.id)} className="text-blue-500 hover:underline">
+                        <button onClick={handleReserve(bike.id)} className="text-white text-sm bg-blue-500 rounded-md py-1 px-2 hover:bg-blue-600">
                           Reserve for {state.reservationDuration} day(s)
                         </button>
                       </div>

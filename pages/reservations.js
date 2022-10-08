@@ -21,7 +21,7 @@ const ReservationsPage = () => {
         data: result,
         loading: isGettingResult,
         error: errorGettingResult },
-        getReservationsByUser
+        getReservationsCreatedByUser
     ] = useAxios(
         {
             url: `/api/reservationsByUser/${state.userIdToFetch}`,
@@ -64,7 +64,7 @@ const ReservationsPage = () => {
 
     React.useEffect(() => {
         if (state.userIdToFetch) {
-            getReservationsByUser()
+            getReservationsCreatedByUser()
         }
     }, [state.userIdToFetch])
 
@@ -73,7 +73,9 @@ const ReservationsPage = () => {
 
         if (result && result.data) {
             result.data.forEach(result => {
-                items[result.id] = result;
+                if (result.active) {
+                    items[result.id] = result;
+                }
             })
 
             setState({
@@ -123,7 +125,7 @@ const ReservationsPage = () => {
                 <>
                     <div className="pb-2 border-b border-gray-500 flex items-center">
                         <span className="flex items-center">
-                            <label className="mr-2">You have {Object.keys(state.items).length} reservations</label>
+                            <label className="mr-2">You have {Object.keys(state.items).length} active reservation(s)</label>
                         </span>
                     </div>
 
@@ -136,10 +138,10 @@ const ReservationsPage = () => {
                                 <div className="h-8 w-16 px-1 py-1">Bike Id</div>
                                 <div className="h-8 w-20 px-1 py-1">Model</div>
                                 <div className="h-8 w-16 px-1 py-1">Color</div>
-                                <div className="h-8 flex-1 px-1 py-1">Location</div>
-                                <div className="h-8 w-28 px-1 py-1">From</div>
-                                <div className="h-8 w-28 px-1 py-1">To</div>
-                                <div className="w-16 px-4 py-1"></div>
+                                <div className="h-8 w-28 px-1 py-1">Location</div>
+                                <div className="h-8 w-24 px-1 py-1">From</div>
+                                <div className="h-8 w-24 px-1 py-1">To</div>
+                                <div className="h-8 w-16 px-4 py-1"></div>
                             </li>
                             {state.items && Object.keys(state.items).length > 0 ?
                                 <>
@@ -153,11 +155,11 @@ const ReservationsPage = () => {
                                             <div className="h-8 w-16 px-1 py-1">{reservation.bike_id}</div>
                                             <div className="h-8 w-20 px-1 py-1">{reservation.model}</div>
                                             <div className="h-8 w-16 px-1 py-1">{reservation.color}</div>
-                                            <div className="h-8 flex-1 px-1 py-1">{reservation.location}</div>
-                                            <div className="h-8 w-28 px-1 py-1">{formatISODate(reservation.reserved_from)}</div>
-                                            <div className="h-8 w-28 px-1 py-1">{formatISODate(reservation.reserved_to)}</div>
-                                            <div className="w-16 px-4 py-1">
-                                                <button onClick={handleDelete(reservation.id)} className="text-blue-500 hover:underline">
+                                            <div className="h-8 w-28 px-1 py-1">{reservation.location}</div>
+                                            <div className="h-8 w-24 px-1 py-1">{formatISODate(reservation.reserved_from)}</div>
+                                            <div className="h-8 w-24 px-1 py-1">{formatISODate(reservation.reserved_to)}</div>
+                                            <div className="flex-1 px-4 py-1">
+                                                <button onClick={handleDelete(reservation.id)} className="bg-red-500 py-1 px-2 text-sm text-white rounded-sm hover:bg-red-600">
                                                     Cancel
                                                 </button>
                                             </div>

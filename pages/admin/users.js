@@ -96,6 +96,44 @@ export default function AdminUsersPage() {
         { manual: true }
     )
 
+    const [{
+        data: resultDeletingReservation,
+        loading: isDeletingReservation,
+        error: errorDeletingReservation },
+        deleteReservation
+    ] = useAxios(
+        {
+            url: `/api/reservations/${state.reservationIdToDelete}`,
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                accept: 'application/json',
+            },
+            data: JSON.stringify({})
+        },
+        { manual: true }
+    )
+
+    const [{
+        data: resultFinishingReservation,
+        loading: isFinishingReservation,
+        error: errorFinishingReservation },
+        finishReservation
+    ] = useAxios(
+        {
+            url: `/api/reservations/${state.reservationIdToFinish}`,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                accept: 'application/json',
+            },
+            data: JSON.stringify({
+                active: false
+            })
+        },
+        { manual: true }
+    )
+
     function handleEdit(id) {
         return event => {
             event && event.preventDefault();
@@ -191,6 +229,26 @@ export default function AdminUsersPage() {
         }
     }
 
+    function handleDeleteReservation(id) {
+        return event => {
+            event && event.preventDefault();
+            setState({
+                ...state,
+                reservationIdToDelete: id
+            })
+        }
+    }
+
+    function handleFinishReservation(id) {
+        return event => {
+            event && event.preventDefault();
+            setState({
+                ...state,
+                reservationIdToFinish: id
+            })
+        }
+    }
+
     React.useEffect(() => {
         const items = {};
 
@@ -212,7 +270,8 @@ export default function AdminUsersPage() {
                         color: result.color,
                         location: result.location,
                         reserved_from: result.reserved_from,
-                        reserved_to: result.reserved_to
+                        reserved_to: result.reserved_to,
+                        reservation_active: result.reservation_active
                     }
                 }
             })
@@ -269,6 +328,20 @@ export default function AdminUsersPage() {
         }
     }, [resultUpdating])
 
+    React.useEffect(() => {
+        if (state.reservationIdToFinish !== null && !isNaN(state.reservationIdToFinish)) {
+            console.log("Finishing reservation:", state.reservationIdToFinish);
+            finishReservation();
+        }
+    }, [state.reservationIdToFinish])
+
+    React.useEffect(() => {
+        if (resultFinishingReservation) {
+            getUsers();
+        }
+    }, [resultFinishingReservation])
+
+
     // deleting
 
     React.useEffect(() => {
@@ -303,6 +376,21 @@ export default function AdminUsersPage() {
             })
         }
     }, [resultDeleting])
+
+    React.useEffect(() => {
+        if (state.reservationIdToDelete !== null && !isNaN(state.reservationIdToDelete)) {
+            console.log("Deleting reservation:", state.reservationIdToDelete);
+            deleteReservation();
+        }
+    }, [state.idToDelete])
+
+    React.useEffect(() => {
+        if (resultDeletingReservation) {
+            getUsers()
+        }
+    }, [resultDeletingReservation])
+
+    // creating
 
     React.useEffect(() => {
         if (resultCreating && resultCreating.status === 'success') {
@@ -435,8 +523,9 @@ export default function AdminUsersPage() {
                                                             <div className="w-20">Model</div>
                                                             <div className="w-12">Color</div>
                                                             <div className="w-28">Location</div>
-                                                            <div className="w-28">From</div>
-                                                            <div className="w-28">To</div>
+                                                            <div className="w-24">From</div>
+                                                            <div className="w-24">To</div>
+                                                            <div className="w-16">Status</div>
                                                         </div>
                                                         {Object.keys(item.reservations).map(reservation_id => {
                                                             const reservation = item.reservations[reservation_id];
@@ -446,12 +535,20 @@ export default function AdminUsersPage() {
                                                                 <div className="w-20">{reservation.model}</div>
                                                                 <div className="w-12">{reservation.color}</div>
                                                                 <div className="w-28">{reservation.location}</div>
-                                                                <div className="w-28">{formatISODate(reservation.reserved_from)}</div>
-                                                                <div className="w-28">{formatISODate(reservation.reserved_to)}</div>
+                                                                <div className="w-24">{formatISODate(reservation.reserved_from)}</div>
+                                                                <div className="w-24">{formatISODate(reservation.reserved_to)}</div>
+                                                                <div className="w-16">{reservation.reservation_active ? '🟢' : '⚪'}</div>
+                                                                <div className="flex-1">
+                                                                    {reservation.reservation_active && <>
+                                                                        <button onClick={handleFinishReservation(reservation.reservation_id)} className="text-blue-500 hover:underline">Finish</button>
+                                                                        <button onClick={handleDeleteReservation(reservation.reservation_id)} className="ml-2 text-red-500 hover:underline">Cancel</button>
+                                                                    </>
+                                                                    }
+                                                                </div>
                                                             </div>
                                                         })}
                                                     </div> : <div className="bg-gray-100 shadow-inner pt-2 pb-4 px-10 text-sm">
-                                                    <div className=" text-gray-400 mt-2">No reservations.</div>
+                                                        <div className=" text-gray-400 mt-2">No reservations.</div>
                                                     </div>}
                                             </li>
                                         }

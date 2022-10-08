@@ -18,7 +18,7 @@ router.get(`${BASE_URL}`, async (context) => {
 
 router.get(`${BASE_URL}/byUser/:userId`, async (context) => {
     try {
-        const bikes = await queries.getBikesReservedByUser(context.params.userId);
+        const bikes = await queries.getReservationsCreatedByUser(context.params.userId);
         context.body = {
             status: 'success',
             data: bikes

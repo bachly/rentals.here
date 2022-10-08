@@ -1,12 +1,12 @@
 const queries = require('../../../db/queries/reservations');
 
-export default async function reservationsByUser(req, res) {
+export default async function reservationsToRateByUser(req, res) {
     try {
         const userId = req.query.userId;
 
         switch (req.method) {
             case "GET":
-                const bikes = await queries.getReservationsCreatedByUser(userId);
+                const bikes = await queries.getReservationsToRateByUser(userId);
                 res.status(200).json({ status: 'success', data: bikes })
                 break;
             default:

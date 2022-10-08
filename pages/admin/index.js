@@ -7,6 +7,7 @@ const BASE_URL = '/api/bikes';
 export default function AdminHomePage() {
     const [state, setState] = React.useState({
         items: null,
+        ratings: {},
         currentEditItems: null,
         currentDeleteItems: null
     })
@@ -298,6 +299,44 @@ export default function AdminHomePage() {
         }
     }, [resultCreating])
 
+    const [{
+        data: resultGettingRatings,
+        loading: isGettingRatings,
+        error: errorGettingRatings },
+        getRatings
+    ] = useAxios(
+        {
+            url: `/api/ratings`,
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                accept: 'application/json',
+            },
+            data: JSON.stringify({})
+        },
+        { manual: false }
+    )
+
+    React.useEffect(() => {
+        if (resultGettingRatings) {
+            const ratings = {};
+
+            if (resultGettingRatings && resultGettingRatings.data) {
+                resultGettingRatings.data.forEach(r => {
+                    ratings[r.bike_id] = {
+                        ...r,
+                        avg_rating: parseFloat(r.avg_rating)
+                    };
+                })
+
+                setState({
+                    ...state,
+                    ratings
+                })
+            }
+        }
+    }, [resultGettingRatings])
+
     return (
         <>
             <AdminHeader active="index" />
@@ -320,7 +359,7 @@ export default function AdminHomePage() {
                                         <div className="w-20 px-1">
                                             <input onChange={handleChange(0, 'color')} className="w-full h-8 px-2 bg-white inner-shadow" placeholder="color" value={state.currentEditItems && state.currentEditItems[0]?.color || ""} />
                                         </div>
-                                        <div className="px-1">
+                                        <div className="flex-1 px-1">
                                             <input onChange={handleChange(0, 'location')} className="w-full h-8 px-2 bg-white inner-shadow" placeholder="location" value={state.currentEditItems && state.currentEditItems[0]?.location || ""} />
                                         </div>
                                         <div className="flex-1 px-1"></div>
@@ -332,6 +371,18 @@ export default function AdminHomePage() {
                                         </div>
                                     </form>
                                     {errorCreating && <span className="text-red-500 px-12">Error creating new item</span>}
+                                </li>
+
+                                <li className="w-full flex items-center py-2 font-bold bg-gray-100">
+                                    <div className="h-8 w-10 px-1 py-1">
+                                        Bike Id
+                                    </div>
+                                    <div className="h-8 w-48 px-1 py-1">Model</div>
+                                    <div className="h-8 w-20 px-1 py-1">Color</div>
+                                    <div className="h-8 w-32 px-1 py-1">Location</div>
+                                    <div className="h-8 flex-1 px-1 py-1">Available</div>
+                                    <div className="h-8 w-20 px-1 py-1">Rating</div>
+                                    <div className="w-40 px-4 py-1"></div>
                                 </li>
 
                                 {Object.keys(state.items).map(id => {
@@ -350,14 +401,17 @@ export default function AdminHomePage() {
                                                 <div className="w-20 px-1">
                                                     <input onChange={handleChange(currentEditItem.id, 'color')} className="w-full h-8 px-2 bg-white inner-shadow" defaultValue={currentEditItem.color} />
                                                 </div>
-                                                <div className="flex-1 px-1">
+                                                <div className="w-32 px-1">
                                                     <input onChange={handleChange(currentEditItem.id, 'location')} className="w-full h-8 px-2 bg-white inner-shadow" defaultValue={currentEditItem.location} />
                                                 </div>
                                                 <div className="flex-1 px-1">
                                                     <select onChange={handleChange(currentEditItem.id, 'active')} defaultValue={currentEditItem.active} className="w-full h-8 bg-white inner-shadow">
                                                         <option value={true}>Available</option>
-                                                        <option value={false}>Not available</option>
+                                                        <option value={false}>N/A</option>
                                                     </select>
+                                                </div>
+                                                <div className="w-20 px-1">
+                                                    {state.ratings[currentEditItem.id] && state.ratings[currentEditItem.id].avg_rating}
                                                 </div>
 
                                                 <div className="w-40 px-4">
@@ -380,8 +434,11 @@ export default function AdminHomePage() {
                                                 </div>
                                                 <div className="h-8 w-48 px-1 py-1 line-through text-gray-400">{currentDeleteItem.model}</div>
                                                 <div className="h-8 w-20 px-1 py-1 line-through">{currentDeleteItem.color}</div>
-                                                <div className="h-8 flex-1 px-1 py-1 line-through">{currentDeleteItem.location}</div>
-                                                <div className="h-8 flex-1 px-1 py-1 line-through">{currentDeleteItem.active ? <span className="text-green-500">Available</span> : <span className="text-red-500">Not Available</span>}</div>
+                                                <div className="h-8 w-32 px-1 py-1 line-through">{currentDeleteItem.location}</div>
+                                                <div className="h-8 flex-1 px-1 py-1 line-through">{currentDeleteItem.active ? <span className="text-green-500">Available</span> : <span className="text-red-500">N/A</span>}</div>
+                                                <div className="w-20 px-1">
+                                                    {state.ratings[currentDeleteItem.id] && state.ratings[currentDeleteItem.id].avg_rating}
+                                                </div>
                                                 <div className="w-40 px-4 py-1">
                                                     <button onClick={handleConfirmDelete(currentDeleteItem.id)} className="text-red-500 hover:underline">
                                                         Delete
@@ -400,8 +457,11 @@ export default function AdminHomePage() {
                                                 </div>
                                                 <div className="h-8 w-48 px-1 py-1">{item.model}</div>
                                                 <div className="h-8 w-20 px-1 py-1">{item.color}</div>
-                                                <div className="h-8 flex-1 px-1 py-1">{item.location}</div>
-                                                <div className="h-8 flex-1 px-1 py-1">{item.active ? <span className="text-green-500">Availabe</span> : <span className="text-red-500">Not Available</span>}</div>
+                                                <div className="h-8 w-32 px-1 py-1">{item.location}</div>
+                                                <div className="h-8 flex-1 px-1 py-1">{item.active ? <span className="text-green-500">Availabe</span> : <span className="text-red-500">N/A</span>}</div>
+                                                <div className="w-20 px-1">
+                                                    {state.ratings[item.id] && state.ratings[item.id].avg_rating}
+                                                </div>
                                                 <div className="w-40 px-4 py-1">
                                                     <button onClick={handleEdit(item.id)} className="text-blue-500 hover:underline">
                                                         Edit

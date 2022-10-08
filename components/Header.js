@@ -13,10 +13,14 @@ const Header = ({ active }) => {
             <Link href="/">
               <a className={clsx(active === 'index' && 'bg-blue-500', 'block py-2 px-4 text-white border-l border-r border-gray-800')}>Bikes</a>
             </Link>
-            {user &&
+            {user && <>
               <Link href="/reservations">
                 <a className={clsx(active === 'reservations' && 'bg-blue-500', 'block py-2 px-4 text-white border-r border-gray-800')}>My reservations</a>
-              </Link>}
+              </Link>
+              <Link href="/rateABike">
+                <a className={clsx(active === 'rateABike' && 'bg-blue-500', 'block py-2 px-4 text-white border-r border-gray-800')}>Rate a bike</a>
+              </Link>
+            </>}
           </div>
           <div className="flex items-center">
             {user &&
