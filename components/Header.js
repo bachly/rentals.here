@@ -10,9 +10,11 @@ const Header = ({ active }) => {
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <div className="text-white mr-4">BIKE RENTALS</div>
             <Link href="/">
-              <a className={clsx(active === 'index' && 'bg-blue-500', 'block py-2 px-4 text-white border-l border-r border-gray-800')}>Bikes</a>
+              <div className="text-white mr-4">BIKE RENTALS</div>
+            </Link>
+            <Link href="/">
+              <a className={clsx(active === 'index' && 'bg-blue-500', 'block py-2 px-4 text-white border-l border-r border-gray-800')}>Home</a>
             </Link>
             {user && <>
               <Link href="/reservations">
@@ -39,7 +41,10 @@ const Header = ({ active }) => {
             }
             {!user && <>
               <Link href="/login">
-                <a className="block py-2 px-4 text-white">Login</a>
+                <a className="block py-2 px-4 text-white border-r border-l border-gray-800">Login</a>
+              </Link>
+              <Link href="/login">
+                <a className="block py-2 px-4 text-white border-r border-gray-800">Signup</a>
               </Link>
             </>}
           </div>

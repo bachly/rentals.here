@@ -2,6 +2,8 @@ import { useUser } from '../lib/hooks'
 import Layout from '../components/Layout'
 import React from 'react';
 import useAxios from 'axios-hooks';
+import ToastContainer from '../components/ToastContainer';
+import Toast from '../components/Toast';
 
 function formatISODate(dateString) {
     const date = new Date(dateString).toLocaleDateString();
@@ -14,7 +16,8 @@ const ReservationsPage = () => {
     const [state, setState] = React.useState({
         items: {},
         userIdToFetch: null,
-        idToDelete: null
+        idToDelete: null,
+        toasts: []
     })
 
     const [{
@@ -109,12 +112,16 @@ const ReservationsPage = () => {
             const items = Object.assign({}, state.items);
             delete items[returnedDeletedItem.id];
 
+            const toasts = state.toasts;
+            toasts.push(<Toast content={`Successfully cancel reservation.`} />);
+
             setState({
                 ...state,
                 items: {
                     ...items
                 },
-                idToDelete: null
+                idToDelete: null,
+                toasts
             })
         }
     }, [resultDeleting])
@@ -169,6 +176,13 @@ const ReservationsPage = () => {
                                     No reservations.
                                 </>}
                         </ul>}
+
+                    <ToastContainer>
+                        {state.toasts.map((toast, index) =>
+                            <div key={`toast-${index}`}>
+                                {toast}
+                            </div>)};
+                    </ToastContainer>
                 </> :
                 <>Please log in</>}
         </Layout>

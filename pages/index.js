@@ -4,6 +4,8 @@ import React from 'react';
 import useAxios from 'axios-hooks';
 import { differenceInDays } from 'date-fns';
 import _ from 'underscore';
+import ToastContainer from '../components/ToastContainer';
+import Toast from '../components/Toast';
 
 function today() {
   return new Date().toISOString().substring(0, 10);
@@ -28,7 +30,8 @@ const Home = () => {
       location: null,
     },
     bikeIdToReserve: null,
-    ratings: {}
+    ratings: {},
+    toasts: []
   })
 
   const [{
@@ -130,6 +133,9 @@ const Home = () => {
   }, [state.bikeIdToReserve, user])
 
   React.useEffect(() => {
+    const toasts = state.toasts;
+    toasts.push(<Toast content={`Successfully create reservation.`} />);
+
     getAvailableBikes();
   }, [resultCreatingReservation])
 
@@ -322,6 +328,13 @@ const Home = () => {
                   </li>
                 </>}
             </ul>}
+
+          <ToastContainer>
+            {state.toasts.map((toast, index) =>
+              <div key={`toast-${index}`}>
+                {toast}
+              </div>)}
+          </ToastContainer>
         </> :
         <>Welcome to Bike Rentals, please log in to start.</>}
     </Layout>
