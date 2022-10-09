@@ -141,6 +141,7 @@ const Home = () => {
       const model = bike.model.toLowerCase();
       const color = bike.color.toLowerCase();
       const location = bike.location.toLowerCase();
+      const avg_rating = state.ratings[bike.id] && state.ratings[bike.id].avg_rating;
 
       if (state.filters.model && model.indexOf(state.filters.model) === -1) {
         result[index] = null;
@@ -153,6 +154,10 @@ const Home = () => {
       if (state.filters.location && location.indexOf(state.filters.location) === -1) {
         result[index] = null;
       }
+
+      if (state.filters.avg_rating && Math.floor(avg_rating) !== parseInt(state.filters.avg_rating)) {
+        result[index] = null;
+      }
     })
 
     _.compact(result).forEach(r => {
@@ -163,7 +168,7 @@ const Home = () => {
       ...state,
       filteredBikes
     })
-  }, [state.filters])
+  }, [state.filters, state.ratings])
 
   React.useEffect(() => {
     if (resultGettingRatings) {
@@ -278,8 +283,8 @@ const Home = () => {
                   <input type="text" onChange={handleChangeFilter('location')} className="border border-gray-300 px-2 w-full text-sm" placeholder="Location" />
                 </div>
                 <div className="h-8 w-16 px-1 py-1">
-                  <select className="w-full">
-                    <option value={null}>-</option>
+                  <select onChange={handleChangeFilter('avg_rating')} className="w-full">
+                    <option value={''}>-</option>
                     <option value={1}>1</option>
                     <option value={2}>2</option>
                     <option value={3}>3</option>
