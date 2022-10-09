@@ -8,7 +8,8 @@ export default function AdminUsersPage() {
     const [state, setState] = React.useState({
         items: null,
         currentEditItems: null,
-        currentDeleteItems: null
+        currentDeleteItems: null,
+        toasts: []
     })
 
     const [{

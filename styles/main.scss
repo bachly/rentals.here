@@ -1,0 +1,36 @@
+/**** Toast Animations ******/
+.animate-toast-in {
+    animation-duration: 0.3s;
+    animation-name: AnimateToastIn;
+    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    pointer-events: all;
+  }
+  
+  .animate-toast-out {
+    animation-name: AnimateToastOut;
+    animation-duration: 0.5s;
+    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    animation-fill-mode: forwards;
+  }
+  
+  @keyframes AnimateToastIn {
+    from {
+      transform: translate3d(0, 50px, 0);
+      opacity: 0;
+    }
+    to {
+      transform: translate3d(0, 0, 0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes AnimateToastOut {
+    from {
+      transform: translate3d(0, 0, 0);
+      opacity: 1;
+    }
+    to {
+      transform: translate3d(0, 50px, 0);
+      opacity: 0;
+    }
+  }

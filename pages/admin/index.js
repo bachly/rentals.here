@@ -1,6 +1,8 @@
 import useAxios from "axios-hooks"
 import React from "react"
 import AdminHeader from "../../components/HeaderAdmin"
+import ToastContainer from "../../components/ToastContainer";
+import Toast from "../../components/Toast";
 
 const BASE_URL = '/api/bikes';
 
@@ -9,7 +11,8 @@ export default function AdminHomePage() {
         items: null,
         ratings: {},
         currentEditItems: null,
-        currentDeleteItems: null
+        currentDeleteItems: null,
+        toasts: []
     })
 
     const [{
@@ -226,6 +229,9 @@ export default function AdminHomePage() {
             const currentEditItems = Object.assign({}, state.currentEditItems);
             delete currentEditItems[returnedUpdatedItem.id];
 
+            const currentToasts = state.toasts;
+            currentToasts.push(<Toast content={`Successfully updating bike ${returnedUpdatedItem.id}`} />);
+
             setState({
                 ...state,
                 items: {
@@ -236,7 +242,8 @@ export default function AdminHomePage() {
                     }
                 },
                 currentEditItems,
-                idToUpdate: null
+                idToUpdate: null,
+                toasts: currentToasts
             })
         }
     }, [resultUpdating])
@@ -265,13 +272,17 @@ export default function AdminHomePage() {
             const items = Object.assign({}, state.items);
             delete items[returnedDeletedItem.id];
 
+            const currentToasts = state.toasts;
+            currentToasts.push(<Toast content={`Successfully deleting bike ${returnedDeletedItem.id}`} />);
+
             setState({
                 ...state,
                 items: {
                     ...items
                 },
                 currentDeleteItems: currentDeleteItems,
-                idToDelete: null
+                idToDelete: null,
+                toasts: currentToasts
             })
         }
     }, [resultDeleting])
@@ -284,6 +295,9 @@ export default function AdminHomePage() {
             const currentEditItems = Object.assign({}, state.currentEditItems);
             delete currentEditItems[0];
 
+            const currentToasts = state.toasts;
+            currentToasts.push(<Toast content={`Successfully creating bike ${returnedCreatedItem.id}`} />);
+
             setState({
                 ...state,
                 items: {
@@ -294,7 +308,8 @@ export default function AdminHomePage() {
                     }
                 },
                 currentEditItems,
-                idToUpdate: null
+                idToUpdate: null,
+                toasts: currentToasts
             })
         }
     }, [resultCreating])
@@ -428,7 +443,7 @@ export default function AdminHomePage() {
                                         if (state.currentDeleteItems && state.currentDeleteItems[id]) {
                                             const currentDeleteItem = state.currentDeleteItems[id];
 
-                                            return <li key={`item-${id}`} className="w-full flex items-center py-2 bg-red-50">
+                                            return <li key={`item - ${id}`} className="w-full flex items-center py-2 bg-red-50">
                                                 <div className="h-8 w-10 px-1 py-1 line-through">
                                                     {currentDeleteItem.id}
                                                 </div>
@@ -451,7 +466,7 @@ export default function AdminHomePage() {
                                         } else {
                                             const item = state.items[id];
 
-                                            return <li key={`item-${id}`} className="w-full flex items-center py-2">
+                                            return <li key={`item - ${id}`} className="w-full flex items-center py-2">
                                                 <div className="h-8 w-10 px-1 py-1">
                                                     {item.id}
                                                 </div>
@@ -479,6 +494,13 @@ export default function AdminHomePage() {
                     </>
                 }
             </div>
+
+            <ToastContainer>
+                {state.toasts.map((toast, index) =>
+                    <div key={`toast-${index}`}>
+                        {toast}
+                    </div>)};
+            </ToastContainer>
         </>
     )
 }
