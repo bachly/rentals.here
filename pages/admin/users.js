@@ -1,6 +1,8 @@
 import useAxios from "axios-hooks"
 import React from "react"
 import AdminHeader from "../../components/HeaderAdmin"
+import Toast from "../../components/Toast";
+import ToastContainer from "../../components/ToastContainer";
 
 const BASE_URL = '/api/users';
 
@@ -314,6 +316,9 @@ export default function AdminUsersPage() {
             const currentEditItems = Object.assign({}, state.currentEditItems);
             delete currentEditItems[returnedUpdatedItem.id];
 
+            const toasts = state.toasts;
+            toasts.push(<Toast content={`Successfully updating user.`} />);
+
             setState({
                 ...state,
                 items: {
@@ -324,7 +329,8 @@ export default function AdminUsersPage() {
                     }
                 },
                 currentEditItems,
-                idToUpdate: null
+                idToUpdate: null,
+                toasts
             })
         }
     }, [resultUpdating])
@@ -338,7 +344,15 @@ export default function AdminUsersPage() {
 
     React.useEffect(() => {
         if (resultFinishingReservation) {
+            const toasts = state.toasts;
+            toasts.push(<Toast content={`Successfully finish the reservation.`} />);
+
             getUsers();
+
+            setState({
+                ...state,
+                toasts
+            })
         }
     }, [resultFinishingReservation])
 
@@ -367,13 +381,17 @@ export default function AdminUsersPage() {
             const items = Object.assign({}, state.items);
             delete items[returnedDeletedItem.id];
 
+            const toasts = state.toasts;
+            toasts.push(<Toast content={`Successfully deleting user.`} />);
+
             setState({
                 ...state,
                 items: {
                     ...items
                 },
                 currentDeleteItems: currentDeleteItems,
-                idToDelete: null
+                idToDelete: null,
+                toasts
             })
         }
     }, [resultDeleting])
@@ -383,11 +401,19 @@ export default function AdminUsersPage() {
             console.log("Deleting reservation:", state.reservationIdToDelete);
             deleteReservation();
         }
-    }, [state.idToDelete])
+    }, [state.reservationIdToDelete])
 
     React.useEffect(() => {
         if (resultDeletingReservation) {
-            getUsers()
+            const toasts = state.toasts;
+            toasts.push(<Toast content={`Successfully cancel reservation.`} />);
+
+            getUsers();
+
+            setState({
+                ...state,
+                toasts
+            })
         }
     }, [resultDeletingReservation])
 
@@ -398,11 +424,16 @@ export default function AdminUsersPage() {
             const currentEditItems = Object.assign({}, state.currentEditItems);
             delete currentEditItems[0];
 
+            const currentToasts = state.toasts;
+            currentToasts.push(<Toast content={`Successfully creating user.`} />);
+
             setState({
                 ...state,
                 currentEditItems,
-                idToUpdate: null
+                idToUpdate: null,
+                toasts: currentToasts
             })
+
             getUsers();
         }
     }, [resultCreating])
@@ -412,6 +443,34 @@ export default function AdminUsersPage() {
             <AdminHeader active="users" />
 
             <div className="max-w-3xl mx-auto">
+                <ul className="mt-8">
+                    <li className="bg-blue-50 w-full py-2">
+                        <form onSubmit={handleSave(0)} className="flex items-center">
+                            <div className="w-10 px-1">
+
+                            </div>
+
+                            <div className="w-48 px-1">
+                                <input onChange={handleChange(0, 'username')} className="w-full h-8 px-2 bg-white inner-shadow" placeholder="username" value={state.currentEditItems && state.currentEditItems[0]?.username || ""} />
+                            </div>
+                            <div className="w-48 px-1">
+                                <input onChange={handleChange(0, 'password')} className="w-full h-8 px-2 bg-white inner-shadow" placeholder="password" value={state.currentEditItems && state.currentEditItems[0]?.password || ""} />
+                            </div>
+                            <div className="w-48 px-1">
+                                <input onChange={handleChange(0, 'roles')} className="w-full h-8 px-2 bg-white inner-shadow" placeholder="roles" value={state.currentEditItems && state.currentEditItems[0]?.roles || ""} />
+                            </div>
+                            <div className="flex-1 px-1"></div>
+
+                            <div className="w-40 px-4">
+                                <button type="submit" className="text-blue-500 hover:underline">
+                                    Add new
+                                </button>
+                            </div>
+                        </form>
+                        {errorCreating && <span className="text-red-500 px-12">Error creating new item</span>}
+                    </li>
+                </ul>
+
                 {isGettingResult ? <>Loading...</> :
                     <>
                         {state.items && Object.keys(state.items).length > 0 &&
@@ -560,6 +619,15 @@ export default function AdminUsersPage() {
                     </>
                 }
             </div>
+
+            <ToastContainer>
+                {state.toasts.map((toast, index) =>
+                    <div key={`toast-${index}`}>
+                        {toast}
+                    </div>)};
+            </ToastContainer>
+
+            <footer className="mt-48"></footer>
         </>
     )
 }

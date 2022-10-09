@@ -56,14 +56,14 @@ async function getAvailableBikesOnADate(fromDate, toDate) {
         })
         .andWhere('reservations.active', '=', true);
 
-    // console.log("reservedBikesOnDate", reservedBikesOnDate);
+    console.log("reservedBikesOnDate", reservedBikesOnDate);
 
     const bikesExcluded = await knex('bikes').select('*')
         .where('active', '=', true)
         .whereNotIn('id', reservedBikesOnDate)
         .orderBy('bikes.id')
 
-    // console.log("bikesExcluded", bikesExcluded);
+    console.log("bikesExcluded", bikesExcluded);
 
     return bikesExcluded;
 }

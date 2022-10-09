@@ -323,7 +323,7 @@ const Home = () => {
                 </>}
             </ul>}
         </> :
-        <>Please log in</>}
+        <>Welcome to Bike Rentals, please log in to start.</>}
     </Layout>
   )
 }
